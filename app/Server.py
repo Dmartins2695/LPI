@@ -233,4 +233,4 @@ api.add_resource(receiveImage, '/receiveImage', endpoint="receiveImage")
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(debug=True, host="192.168.1.134", port="5000")
+    app.run(debug=True, host="192.168.1.81", port="5000")
