@@ -8,7 +8,7 @@ perfil_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_profileface.xm
 
 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
 
-URL = "http://192.168.1.81:5000/receiveImage"
+URL = "http://192.168.1.81:5000/"
 # Capturing video from webcam:
 cap = cv2.VideoCapture(0)
 
@@ -53,7 +53,7 @@ while True:
             print("jpg_as_text")
             print(jpg_as_text)
             json = {'image': jpg_as_text}
-            r = requests.post(url=URL, data=json)
+            postRequest = requests.post(url=URL+'receiveImage', data=json)
         # To stop duplicate images
         currentFrame += 1
         faces1 = faces

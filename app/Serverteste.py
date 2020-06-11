@@ -1,23 +1,26 @@
-from flask import Flask, render_template, request,make_response,jsonify,redirect,g
+import base64
+import datetime
+import os
+import sqlalchemy
+from datetime import datetime
+from functools import wraps
+
+import jwt
+from flask import Flask, render_template, request, make_response, jsonify, redirect, g
+from flask_jwt_extended import JWTManager
 from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
 from passlib.hash import pbkdf2_sha256 as sha256
-from functools import wraps
-import datetime
-import cv2, jwt
-import base64
-import os, sqlalchemy
-from flask_jwt_extended import JWTManager
 
-app=Flask(__name__)
-api=Api(app)
+app = Flask(__name__)
+api = Api(app)
 parser = reqparse.RequestParser()
 app.secret_key = '%tY24$iKao@£Po&'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Lolada123@localhost/LPI'
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = 'q2W£e4R§'
+
 
 @app.before_request
 def before_request():
@@ -27,8 +30,8 @@ def before_request():
         user = [x for x in users if x.id == session['user_id']][0]
         g.user = user
 
-
     # cria todas as tabelas
+
 
 @app.before_first_request
 def create_tables():
@@ -41,7 +44,7 @@ def create_tables():
 #     return RevokedTokenModel.is_jti_blacklisted(jti)
 
 
-                # DATABASE SECTION
+# DATABASE SECTION
 
 class UserModel(db.Model):
     __tablename__ = 'users'
@@ -100,6 +103,7 @@ class UserModel(db.Model):
     def verify_hash(password, hash):
         return sha256.verify(password, hash)
 
+
 class UserLogin(Resource):
     def post(self):
         parser_login = parser.copy()
@@ -130,6 +134,7 @@ class UserLogin(Resource):
                 'code': 'wrong_credentials'
             }
 
+
 class User:
     def __init__(self, id, username, password):
         self.id = id
@@ -138,6 +143,7 @@ class User:
 
     def __repr__(self):
         return f'<User: {self.username}>'
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -156,6 +162,7 @@ def login():
 
     return render_template('login.html')
 
+
 @app.route('/profile')
 def profile():
     if not g.user:
@@ -163,11 +170,14 @@ def profile():
 
     return render_template('profile.html')
 
+
 @app.route('/student/<id>')
 def hello_world(id):
     return 'Hello,' + id
 
-                # IMAGE PROCESSING SeCTION
+    # IMAGE PROCESSING SeCTION
+
+
 class receiveImage(Resource):
     def post(self):
         path = "C:\\Users\danie\PycharmProjects\Cliente\\venv\serverImages"
