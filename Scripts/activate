@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\plato\PycharmProjects\Cliente\venv"
+VIRTUAL_ENV="C:\Users\danie\PycharmProjects\SuperViser\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

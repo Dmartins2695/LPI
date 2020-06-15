@@ -8,7 +8,7 @@ perfil_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_profileface.xm
 
 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
 
-URL = "http://192.168.1.81:5000/"
+URL = "http://192.168.1.134:5000/"
 # Capturing video from webcam:
 cap = cv2.VideoCapture(0)
 
@@ -46,7 +46,7 @@ while True:
         k = cv2.waitKey(1)
         if k % 256 == 27:
             break
-        elif k % 256 == 32:
+        elif k % 256 == 32: #SPACE KEY
             # Sends Post to save image of the current frame in jpg file in server
             result, frame = cv2.imencode('.jpg', frame, encode_param)
             jpg_as_text = base64.b64encode(frame)

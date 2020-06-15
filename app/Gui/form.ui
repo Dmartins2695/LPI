@@ -14,7 +14,7 @@
    <string>SuperVisor</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="btn1">
+   <widget class="QPushButton" name="btn_login">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -27,7 +27,7 @@
      <string>Login</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="code">
+   <widget class="QLineEdit" name="login_username">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -42,8 +42,11 @@
     <property name="placeholderText">
      <string>Username</string>
     </property>
+    <property name="clearButtonEnabled">
+     <bool>true</bool>
+    </property>
    </widget>
-   <widget class="QLineEdit" name="code_2">
+   <widget class="QLineEdit" name="login_pass">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -52,14 +55,20 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Password</enum>
+    </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
     </property>
     <property name="placeholderText">
      <string>Password</string>
     </property>
+    <property name="clearButtonEnabled">
+     <bool>true</bool>
+    </property>
    </widget>
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="label_login">
     <property name="geometry">
      <rect>
       <x>150</x>
@@ -72,7 +81,7 @@
      <string>Login</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="code_3">
+   <widget class="QLineEdit" name="reg_username">
     <property name="geometry">
      <rect>
       <x>490</x>
@@ -102,8 +111,11 @@
     <property name="placeholderText">
      <string>Username</string>
     </property>
+    <property name="clearButtonEnabled">
+     <bool>true</bool>
+    </property>
    </widget>
-   <widget class="QLineEdit" name="code_4">
+   <widget class="QLineEdit" name="reg_pass">
     <property name="geometry">
      <rect>
       <x>490</x>
@@ -113,10 +125,13 @@
      </rect>
     </property>
     <property name="inputMask">
-     <string/>
+     <string notr="true"/>
     </property>
     <property name="text">
-     <string/>
+     <string notr="true"/>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Password</enum>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -124,8 +139,11 @@
     <property name="placeholderText">
      <string>Password</string>
     </property>
+    <property name="clearButtonEnabled">
+     <bool>true</bool>
+    </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="label_reg">
     <property name="geometry">
      <rect>
       <x>610</x>
@@ -138,7 +156,7 @@
      <string>Register</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn1_2">
+   <widget class="QPushButton" name="btn_reg">
     <property name="geometry">
      <rect>
       <x>590</x>
@@ -154,7 +172,7 @@
      <string>Register</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="code_5">
+   <widget class="QLineEdit" name="reg_email">
     <property name="geometry">
      <rect>
       <x>490</x>
@@ -173,7 +191,10 @@
      <set>Qt::AlignCenter</set>
     </property>
     <property name="placeholderText">
-     <string>Email</string>
+     <string>emailexample@ufp.edu.pt</string>
+    </property>
+    <property name="clearButtonEnabled">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>

@@ -52,7 +52,56 @@ def create_tables():
 
 # DATABASE SECTION
 
-class studentModel(db.Model):
+class ImageModel(db.Model):
+    __tablename__ = 'images'
+
+    def __init__(self, username, image):
+        self.username = username
+        self.image = image
+
+    image = db.Column(db.String(120),unique=True, nullable=False)
+    username = db.Column(db.String(120), primary_key=True,unique=True, nullable=False)
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    # verifica se ja existe algum utilizador com esse email
+
+    @classmethod
+    def find_by_email(cls, email):
+        return cls.query.filter_by(email=email).first()
+
+    # verifica se ja existe algum utilizador com esse username
+    @classmethod
+    def find_by_username(cls, username):
+        return cls.query.filter_by(username=username).first()
+
+    @staticmethod
+    def generate_hash(password):
+        return sha256.hash(password)
+
+    # para verificar hash no login
+    @staticmethod
+    def verify_hash(password, hash):
+        return sha256.verify(password, hash)
+
+    @classmethod
+    def find_images_by_id(cls, id):
+        return ImageModel.find_images_by_id(id)
+
+    # elimina todos os utilizadores
+    @classmethod
+    def delete_all(cls):
+        try:
+            num_rows_deleted = db.session.query(cls).delete()
+            db.session.commit()
+            return {'message': '{} row(s) deleted'.format(num_rows_deleted)}
+        except:
+            return {'message': 'Something went wrong'}
+
+
+class StudentModel(db.Model):
     __tablename__ = 'students'
 
     def __init__(self, username, email, password):
@@ -60,7 +109,7 @@ class studentModel(db.Model):
         self.email = email
         self.password = password
 
-    username = db.Column(db.String(120), primary_key=True, unique=True, nullable=False)
+    username = db.Column(db.String(120),primary_key=True, unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
 
@@ -87,6 +136,15 @@ class studentModel(db.Model):
     @staticmethod
     def verify_hash(password, hash):
         return sha256.verify(password, hash)
+
+    @classmethod
+    def delete_all(cls):
+        try:
+            num_rows_deleted = db.session.query(cls).delete()
+            db.session.commit()
+            return {'message': '{} row(s) deleted'.format(num_rows_deleted)}
+        except:
+            return {'message': 'Something went wrong'}
 
     # # client login
     # class UserLogin(Resource):
@@ -158,23 +216,6 @@ class UserModel(db.Model):
     def find_by_username(cls, username):
         return cls.query.filter_by(username=username).first()
 
-    # @classmethod
-    # def find_images_by_id(cls, id):
-    #     return ImageModel.find_images_by_id(id)
-
-
-    # # elimina todos os utilizadores
-    # @classmethod
-    # def delete_all(cls):
-    #     try:
-    #         num_rows_deleted = db.session.query(cls).delete()
-    #         db.session.commit()
-    #         return {'message': '{} row(s) deleted'.format(num_rows_deleted)}
-    #     except:
-    #         return {'message': 'Something went wrong'}
-
-    # para gerar hash
-
     @staticmethod
     def generate_hash(password):
         return sha256.hash(password)
@@ -183,6 +224,15 @@ class UserModel(db.Model):
     @staticmethod
     def verify_hash(password, hash):
         return sha256.verify(password, hash)
+
+    @classmethod
+    def delete_all(cls):
+        try:
+            num_rows_deleted = db.session.query(cls).delete()
+            db.session.commit()
+            return {'message': '{} row(s) deleted'.format(num_rows_deleted)}
+        except:
+            return {'message': 'Something went wrong'}
 
 
 # Web app side
@@ -281,13 +331,36 @@ def user():
 
     # IMAGE PROCESSING SeCTION
 
+class studentLogin(Resource):
+    def post(self):
+        parser_upload = parser.copy()
+        parser_upload.add_argument('StudentUser', help='code cannot be blank', required=False)
+        parser_upload.add_argument('StudentPassword', help='code cannot be blank', required=False)
+        data = parser_upload.parse_args()
+        user = data['StudentUser']
+        password = data['StudentPassword']
 
-@app.route('/check', methods=['GET'])
-def checkCode(data):
-    if data == session['code']:
+        client = StudentModel.find_by_username(user)
+        print(client.email)
+        if StudentModel.verify_hash(password,client.password):
+            session['Studentuser']=user
+            return {'code': 'sucess'}
+        else:
+            return {'code': 'wrong_credentials'}
+
+class studentRegister(Resource):
+    def post(self):
+        parser_upload = parser.copy()
+        parser_upload.add_argument('StudentUser', help='code cannot be blank', required=False)
+        parser_upload.add_argument('StudentPassword', help='code cannot be blank', required=False)
+        parser_upload.add_argument('StudentEmail', help='code cannot be blank', required=False)
+        data = parser_upload.parse_args()
+        username = data['StudentUser']
+        password = data['StudentPassword']
+        email = data['StudentEmail']
+        client = StudentModel(username=username, email=email, password=StudentModel.generate_hash(password))
+        client.save_to_db()
         return 200
-    else:
-        return 404
 
 
 class receiveCode(Resource):
@@ -297,29 +370,43 @@ class receiveCode(Resource):
         data = parser_upload.parse_args()
         code = data['roomCode']
         print(code)
-        return redirect(url_for('check', _method='GET', data=code)), 200
+        if code == session['code']:
+            return { 'code': 'sucess'}
+        else:
+            return {
+                'code': 'error',
+                'message': 'room not found'
+                 }
 
 
 class receiveImage(Resource):
     def post(self):
-        path = "C:\\Users\danie\PycharmProjects\Cliente\\venv\serverImages"
+        path = "C:\\Users\danie\PycharmProjects\SuperViser\\venv\\app\serverImages"
         parser_upload = parser.copy()
         parser_upload.add_argument('image', help='Image cannot be blank', required=False)
+        #  parser_upload.add_argument('StudentUser', help='code cannot be blank', required=False)
         data = parser_upload.parse_args()
         image = data['image']
+        # user = data['StudentUser']
+        # client = StudentModel.find_by_username(user)
         bytes = base64.b64decode(image)
-        date = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+        date = datetime.now().strftime("%d%m%Y_%H%M%S")
+        imagepath=path +"\\"+'_'+ date + '.jpg' # missing + client.username
         if not os.path.isdir(path):
             os.mkdir(path)
-        with open(path + "\\" + date + '.jpg', "wb") as img:
+        with open(imagepath, "wb") as img:
             img.write(bytes)
-            print(img.name)
+        imgtosave = ImageModel(username=client.username,image=imagepath)
+        imgtosave.save_to_db()
         return 200
 
 
 api.add_resource(receiveImage, '/receiveImage', endpoint="receiveImage")
 api.add_resource(receiveCode, '/receiveCode', endpoint="receiveCode")
+api.add_resource(studentLogin, '/studentLogin', endpoint="studentLogin")
+api.add_resource(studentRegister, '/studentRegister', endpoint="studentRegister")
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(debug=True, host="192.168.1.99", port="5000")
+    app.run(debug=True, host="192.168.1.134", port="5000")
+
