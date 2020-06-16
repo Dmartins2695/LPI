@@ -2,9 +2,9 @@ import cv2, base64, requests
 import numpy as np
 import math
 
-face_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_frontalface_alt2.xml')
-eye_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_eye.xml')
-perfil_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_profileface.xml')
+face_cascade = cv2.CascadeClassifier('Gui\cascades\data\haarcascade_frontalface_alt2.xml')
+eye_cascade = cv2.CascadeClassifier('Gui\cascades\data\haarcascade_eye.xml')
+perfil_cascade = cv2.CascadeClassifier('Gui\cascades\data\haarcascade_profileface.xml')
 
 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
 
