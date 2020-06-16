@@ -52,6 +52,48 @@ def create_tables():
 
 # DATABASE SECTION
 
+class RoomModel(db.Model):
+    __tablename__ = 'room'
+
+    def __init__(self, roomName, code):
+        self.roomName = roomName
+        self.code = code
+
+    roomName = db.Column(db.String(120), unique=True, nullable=False)
+    code = db.Column(db.String(150), primary_key=True, unique=True, nullable=False)
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    @classmethod
+    def find_by_roomName(cls, roomName):
+        return cls.query.filter_by(roomName=roomName).first()
+
+    @classmethod
+    def find_by_code(cls, code):
+        return cls.query.filter_by(code=code).first()
+
+    @staticmethod
+    def generate_hash(password):
+        return sha256.hash(password)
+
+    # para verificar hash no login
+    @staticmethod
+    def verify_hash(password, hash):
+        return sha256.verify(password, hash)
+
+    # elimina todos os utilizadores
+    @classmethod
+    def delete_all(cls):
+        try:
+            num_rows_deleted = db.session.query(cls).delete()
+            db.session.commit()
+            return {'message': '{} row(s) deleted'.format(num_rows_deleted)}
+        except:
+            return {'message': 'Something went wrong'}
+
+
 class ImageModel(db.Model):
     __tablename__ = 'images'
 
@@ -59,8 +101,8 @@ class ImageModel(db.Model):
         self.username = username
         self.image = image
 
-    image = db.Column(db.String(120),unique=True, nullable=False)
-    username = db.Column(db.String(120), primary_key=True,unique=True, nullable=False)
+    image = db.Column(db.String(120), unique=True, nullable=False)
+    username = db.Column(db.String(120), primary_key=True, unique=True, nullable=False)
 
     def save_to_db(self):
         db.session.add(self)
@@ -104,26 +146,29 @@ class ImageModel(db.Model):
 class StudentModel(db.Model):
     __tablename__ = 'students'
 
-    def __init__(self, username, email, password):
+    def __init__(self, username, email, password, status):
         self.username = username
         self.email = email
         self.password = password
+        self.status = status
 
-    username = db.Column(db.String(120),primary_key=True, unique=True, nullable=False)
+    username = db.Column(db.String(120), primary_key=True, unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
+    status = db.Column(db.String(120), nullable=False)
 
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
 
-# verifica se ja existe algum utilizador com esse email
+    # verifica se ja existe algum utilizador com esse email
 
     @classmethod
     def find_by_email(cls, email):
-        return cls.query.filter_by(email=email).first()
+        return cls.query.filter_by(email=email).first() \
+ \
+            # verifica se ja existe algum utilizador com esse username
 
-# verifica se ja existe algum utilizador com esse username
     @classmethod
     def find_by_username(cls, username):
         return cls.query.filter_by(username=username).first()
@@ -177,7 +222,6 @@ class StudentModel(db.Model):
     #                 'code': 'wrong_credentials'
     #             }
 
-
     # retorna todos os utilizadores
     # @classmethod
     # def return_all(cls):
@@ -188,6 +232,7 @@ class StudentModel(db.Model):
     #         }
     #
     #     return {'users': list(map(lambda x: to_json(x), UserModel.query.all()))}
+
 
 class UserModel(db.Model):
     __tablename__ = 'users'
@@ -270,13 +315,11 @@ def register():
     return render_template('register.html')
 
 
-@app.route('/room')
-def room():
-    if request.method == "GET":
-        header = session['code']
-    else:
+@app.route('/room/<code>')
+def room(code):
+    if request.method != "GET":
         return render_template('home.html')
-    return render_template('room.html', messages=header)
+    return render_template('room.html', messages=code)
 
 
 @app.route('/createRoom', methods=["GET", "POST"])
@@ -284,9 +327,10 @@ def createRoom():
     if request.method == "POST":
         rname = request.form.get("roomname")
         code = rname + datetime.now().strftime("%d%m%Y%H%M%S")
-        session['code'] = code
+        room = RoomModel(rname, code)
+        room.save_to_db()
         flash('Sala criada com successo!', 'success')
-        return redirect(url_for('room'))
+        return redirect(url_for('room', code=code))
     else:
         return render_template("createRoom.html")
 
@@ -331,6 +375,7 @@ def user():
 
     # IMAGE PROCESSING SeCTION
 
+
 class studentLogin(Resource):
     def post(self):
         parser_upload = parser.copy()
@@ -342,11 +387,12 @@ class studentLogin(Resource):
 
         client = StudentModel.find_by_username(user)
         print(client.email)
-        if StudentModel.verify_hash(password,client.password):
-            session['Studentuser']=user
+        if StudentModel.verify_hash(password, client.password):
+            session['Studentuser'] = user
             return {'code': 'sucess'}
         else:
             return {'code': 'wrong_credentials'}
+
 
 class studentRegister(Resource):
     def post(self):
@@ -358,7 +404,7 @@ class studentRegister(Resource):
         username = data['StudentUser']
         password = data['StudentPassword']
         email = data['StudentEmail']
-        client = StudentModel(username=username, email=email, password=StudentModel.generate_hash(password))
+        client = StudentModel(username=username, email=email, password=StudentModel.generate_hash(password), status=' false')
         client.save_to_db()
         return 200
 
@@ -369,14 +415,16 @@ class receiveCode(Resource):
         parser_upload.add_argument('roomCode', help='code cannot be blank', required=False)
         data = parser_upload.parse_args()
         code = data['roomCode']
+        room = RoomModel.find_by_code(code)
         print(code)
-        if code == session['code']:
-            return { 'code': 'sucess'}
+        print(room)
+        if code == room.code:
+            return {'code': 'sucess'}
         else:
             return {
                 'code': 'error',
                 'message': 'room not found'
-                 }
+            }
 
 
 class receiveImage(Resource):
@@ -391,13 +439,13 @@ class receiveImage(Resource):
         # client = StudentModel.find_by_username(user)
         bytes = base64.b64decode(image)
         date = datetime.now().strftime("%d%m%Y_%H%M%S")
-        imagepath=path +"\\"+'_'+ date + '.jpg' # missing + client.username
+        imagepath = path + "\\" + '_' + date + '.jpg'  # missing + client.username
         if not os.path.isdir(path):
             os.mkdir(path)
         with open(imagepath, "wb") as img:
             img.write(bytes)
-        imgtosave = ImageModel(username=client.username,image=imagepath)
-        imgtosave.save_to_db()
+        # imgtosave = ImageModel(username=client.username, image=imagepath)
+        # imgtosave.save_to_db()
         return 200
 
 
@@ -408,5 +456,4 @@ api.add_resource(studentRegister, '/studentRegister', endpoint="studentRegister"
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(debug=True, host="192.168.1.134", port="5000")
-
+    app.run(debug=True, host="192.168.1.99", port="5000")
