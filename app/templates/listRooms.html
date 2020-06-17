@@ -2,6 +2,6 @@
     {% block body %}
         <h1>My Rooms</h1>
     {% for rooms in ownedRooms %}
-        <a>Room -><button class="btn btn-link" href="/room/{{ rooms.roomName }}" type="button">{{ rooms.roomName }}</button></a>
+        <li><a href="{{ url_for('room',name = rooms.roomName) }}">{{ rooms.roomName }}</a></li>
     {% endfor %}
     {%  endblock %}

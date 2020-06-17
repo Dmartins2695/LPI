@@ -159,24 +159,24 @@ class ImageModel(db.Model):
 class StudentModel(db.Model):
     __tablename__ = 'students'
 
-    def __init__(self, username, email, password, status):
+    def __init__(self, username, email, password, joinedRoom):
         self.username = username
         self.email = email
         self.password = password
-        self.status = status
+        self.joinedRoom = joinedRoom
 
     username = db.Column(db.String(120), primary_key=True, unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
-    status = db.Column(db.String(120), nullable=False)
+    joinedRoom = db.Column(db.String(120), nullable=False)
 
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
 
     @classmethod
-    def find_by_status(cls, status):
-        return cls.query.filter_by(status=status).first()
+    def find_allStudents(cls, username):
+        return cls.query.filter_by(username=username)
 
     # verifica se ja existe algum utilizador com esse email
 
@@ -189,6 +189,7 @@ class StudentModel(db.Model):
     @classmethod
     def find_by_username(cls, username):
         return cls.query.filter_by(username=username).first()
+
 
     @staticmethod
     def generate_hash(password):
@@ -354,7 +355,7 @@ def room(name):
         studentName = request.form.get("studentName")
         return redirect(url_for('showStudentImages', studentName=studentName))
     else:
-        return redirect(url_for('room', name=name))
+        return render_template('room.html', name=name)
 
 
 @app.route('/createRoom', methods=["GET", "POST"])

@@ -5,7 +5,7 @@ import base64
 import cv2
 import numpy as np
 import requests
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow
 from PyQt5.QtGui import QImage, QPixmap
@@ -87,8 +87,12 @@ class camPage(QMainWindow):
         loadUi('webCam.ui', self)
         self.cap = cv2.VideoCapture(0)
         self.btn_disable.clicked.connect(self.closeCvCam)
-        self.btn_enable.clicked.connect(self.openCvCam)
+        self.btn_enable.clicked.connect(self.alternative)
         self.btn_leave.clicked.connect(self.leave)
+
+    def alternative(self) :
+        pixmap = QPixmap('SuperVisor.jpg')
+        self.imgLabel.setPixmap(pixmap)
 
     def openCvCam(self):
         self.cap = cv2.VideoCapture(0)
@@ -140,21 +144,23 @@ class camPage(QMainWindow):
                     # To stop duplicate images
                     currentFrame += 1
 
-    def displayImage(self, frame, param):
-        qformat = QImage.Format_Indexed8
-
-        if len(frame.shape) == 3:
-            if (frame.shape[2]) == 4:
-                qformat = QImage.Format_RGBA8888
-            else:
-                qformat = QImage.Format_RGBA8888
-
-        frame = QImage(frame, frame.shape[1], frame.shape[0], qformat)
-        frame = frame.rgbSwapped()
-        self.imgLabel.setPixmap(QPixmap.fromImage(frame))
-        self.imgLabel.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+    # def displayImage(self, frame, param):
+    #     qformat = QImage.Format_Indexed8
+    #
+    #     if len(frame.shape) == 3:
+    #         if (frame.shape[2]) == 4:
+    #             qformat = QImage.Format_RGBA8888
+    #         else:
+    #             qformat = QImage.Format_RGBA8888
+    #
+    #     frame = QImage(frame, frame.shape[1], frame.shape[0], qformat)
+    #     frame = frame.rgbSwapped()
+    #     self.imgLabel.setPixmap(QPixmap.fromImage(frame))
+    #     self.imgLabel.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
     def closeCvCam(self):
+        pixmap = QPixmap('blackscreen.jpg')
+        self.imgLabel.setPixmap(pixmap)
         self.cap.release()
 
     def leave(self):
