@@ -19,28 +19,137 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2517ffc2-aa8e-4b88-b18e-ddb4e6909854" name="Default Changelist" comment="asd" />
+    <list default="true" id="2517ffc2-aa8e-4b88-b18e-ddb4e6909854" name="Default Changelist" comment="asd">
+      <change afterPath="$PROJECT_DIR$/app/static/serverImages/SuperVisor.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/static/serverImages/img.qrc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/templates/listRooms.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/templates/showStudentImages.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Gui/StudentApp.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/Gui/StudentApp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Gui/codeForm.ui" beforeDir="false" afterPath="$PROJECT_DIR$/app/Gui/codeForm.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Gui/form.ui" beforeDir="false" afterPath="$PROJECT_DIR$/app/Gui/form.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Gui/webCam.ui" beforeDir="false" afterPath="$PROJECT_DIR$/app/Gui/webCam.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Server.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/Server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/serverImages/14-06-2020_21-52-43.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/serverImages/14-06-2020_21-52-43.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/serverImages/14-06-2020_21-54-01.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/serverImages/14-06-2020_21-54-01.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/serverImages/dani14-06-2020_22-03-29.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/serverImages/dani14-06-2020_22-03-29.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/serverImages/dani14-06-2020_22-03-54.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/serverImages/dani14-06-2020_22-03-54.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/layout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/room.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/room.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitToolBoxStore">
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="DesktopDaniel" />
+                    <option name="lastUsedInstant" value="1592329707" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="master" />
+                    <option name="lastUsedInstant" value="1592329706" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
+  </component>
   <component name="ProjectId" id="1dPQozopeLks4OQCZa6SQcEe0Uz" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager">
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\plato\OneDrive\Documentos\GitHub\LPI\app\serving_static" />
+      <recent name="C:\Users\plato\OneDrive\Documentos\GitHub\LPI\app\static" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.StudentApp">
+    <configuration name="Client" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="LPI" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/Client.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Server" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="LPI" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/Server.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="StudentApp" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="LPI" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -66,6 +175,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.StudentApp" />
+        <item itemvalue="Python.Server" />
+        <item itemvalue="Python.Client" />
       </list>
     </recent_temporary>
   </component>
@@ -82,6 +193,7 @@
       <workItem from="1592324428223" duration="206000" />
       <workItem from="1592325093091" duration="727000" />
       <workItem from="1592326161101" duration="790000" />
+      <workItem from="1592406542319" duration="14236000" />
     </task>
     <task id="LOCAL-00001" summary="asd">
       <created>1592326186784</created>
@@ -109,6 +221,7 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="asd" />
     <option name="LAST_COMMIT_MESSAGE" value="asd" />
   </component>
@@ -125,22 +238,38 @@
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="414" y="195" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592325504513" />
-    <state width="1877" height="295" key="GridCell.Tab.0.bottom" timestamp="1592324634185">
+    <state width="1877" height="363" key="GridCell.Tab.0.bottom" timestamp="1592420822543">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1877" height="295" key="GridCell.Tab.0.bottom/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592324634185" />
-    <state width="1877" height="295" key="GridCell.Tab.0.center" timestamp="1592324634185">
+    <state width="1877" height="363" key="GridCell.Tab.0.bottom/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592420822543" />
+    <state width="1877" height="363" key="GridCell.Tab.0.center" timestamp="1592420822543">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1877" height="295" key="GridCell.Tab.0.center/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592324634185" />
-    <state width="1877" height="295" key="GridCell.Tab.0.left" timestamp="1592324634184">
+    <state width="1877" height="363" key="GridCell.Tab.0.center/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592420822543" />
+    <state width="1877" height="363" key="GridCell.Tab.0.left" timestamp="1592420822543">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1877" height="295" key="GridCell.Tab.0.left/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592324634184" />
-    <state width="1877" height="295" key="GridCell.Tab.0.right" timestamp="1592324634185">
+    <state width="1877" height="363" key="GridCell.Tab.0.left/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592420822543" />
+    <state width="1877" height="363" key="GridCell.Tab.0.right" timestamp="1592420822543">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1877" height="295" key="GridCell.Tab.0.right/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592324634185" />
+    <state width="1877" height="363" key="GridCell.Tab.0.right/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592420822543" />
+    <state width="1877" height="363" key="GridCell.Tab.1.bottom" timestamp="1592420822543">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="363" key="GridCell.Tab.1.bottom/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592420822543" />
+    <state width="1877" height="363" key="GridCell.Tab.1.center" timestamp="1592420822543">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="363" key="GridCell.Tab.1.center/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592420822543" />
+    <state width="1877" height="363" key="GridCell.Tab.1.left" timestamp="1592420822543">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="363" key="GridCell.Tab.1.left/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592420822543" />
+    <state width="1877" height="363" key="GridCell.Tab.1.right" timestamp="1592420822543">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="363" key="GridCell.Tab.1.right/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592420822543" />
     <state x="461" y="185" key="SettingsEditor" timestamp="1592326175766">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
@@ -149,9 +278,25 @@
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="769" y="454" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592326193737" />
+    <state x="514" y="269" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1592419702554">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="514" y="269" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592419702554" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/app/Server.py</url>
+          <line>350</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/LPI$Server.coverage" NAME="Server Coverage Results" MODIFIED="1592324507530" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
-    <SUITE FILE_PATH="coverage/LPI$StudentApp.coverage" NAME="StudentApp Coverage Results" MODIFIED="1592324499215" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/Gui" />
+    <SUITE FILE_PATH="coverage/LPI$Server.coverage" NAME="Server Coverage Results" MODIFIED="1592420054579" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/LPI$Client.coverage" NAME="Client Coverage Results" MODIFIED="1592407956392" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/LPI$StudentApp.coverage" NAME="StudentApp Coverage Results" MODIFIED="1592420822535" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/Gui" />
   </component>
 </project>

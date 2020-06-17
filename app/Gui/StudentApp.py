@@ -68,7 +68,7 @@ class CodePage(QMainWindow):
     def getCode(self):
         roomCode = self.code.text()
         print(roomCode)
-        json = {'roomCode': roomCode}
+        json = {'roomCode': roomCode} #mandar username
         postRequest = requests.post(url=URL + '/receiveCode', data=json)
         postJason = postRequest.json()
         if postJason['code'] == 'sucess':
@@ -123,9 +123,9 @@ class camPage(QMainWindow):
 
                     # Handles the mirroring of the current frame
                     frame = cv2.flip(frame, 1)
-
+                    frame = QPixmap(frame)
                     # Display the resulting frame
-                    self.displayImage(frame, 1)
+                    self.imgLabel.setPixmap(frame)
                     k = cv2.waitKey(1)
                     if k % 256 == 27:
                         break

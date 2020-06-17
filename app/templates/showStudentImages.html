@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h1>{{ studentName }}</h1>
+{#    <img src="{{url_for('static', filename='/serverImages/14-06-2020_21-54-01.jpg') }}" alt="single">#}
+    {% for image in allImages %}
+        <img src="{{url_for('static', filename=image.image) }}"width="320" height= "240"/>
+    {% endfor %}
+{% endblock %}
