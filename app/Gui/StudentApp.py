@@ -68,7 +68,7 @@ class CodePage(QMainWindow):
     def getCode(self):
         roomCode = self.code.text()
         print(roomCode)
-        json = {'roomCode': roomCode} #mandar username
+        json = {'roomCode': roomCode, 'studentName': credentials[0]} #mandar username
         postRequest = requests.post(url=URL + '/receiveCode', data=json)
         postJason = postRequest.json()
         if postJason['code'] == 'sucess':
@@ -137,9 +137,8 @@ class camPage(QMainWindow):
                         # Sends Post to save image of the current frame in jpg file in server
                         result, frame = cv2.imencode('.jpg', frame, encode_param)
                         jpg_as_text = base64.b64encode(frame)
-                        print("jpg_as_text")
-                        print(jpg_as_text)
-                        json = {'image': jpg_as_text}
+
+                        json = {'image': jpg_as_text, 'studentName': credentials[0]}
                         postRequest = requests.post(url=URL + 'receiveImage', data=json)
                     # To stop duplicate images
                     currentFrame += 1

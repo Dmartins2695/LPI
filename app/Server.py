@@ -159,11 +159,12 @@ class ImageModel(db.Model):
 class StudentModel(db.Model):
     __tablename__ = 'students'
 
-    def __init__(self, username, email, password, joinedRoom):
+    def __init__(self, username, email, password, joinedRoom, newImages):
         self.username = username
         self.email = email
         self.password = password
         self.joinedRoom = joinedRoom
+        self.newImages = newImages
 
     username = db.Column(db.String(120), primary_key=True, unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -175,8 +176,8 @@ class StudentModel(db.Model):
         db.session.commit()
 
     @classmethod
-    def find_allStudents(cls, username):
-        return cls.query.filter_by(username=username)
+    def find_studentsRoom(cls, joinedRoom):
+        return cls.query.filter_by(joinedRoom=joinedRoom).all()
 
     # verifica se ja existe algum utilizador com esse email
 
@@ -189,7 +190,6 @@ class StudentModel(db.Model):
     @classmethod
     def find_by_username(cls, username):
         return cls.query.filter_by(username=username).first()
-
 
     @staticmethod
     def generate_hash(password):
@@ -355,7 +355,10 @@ def room(name):
         studentName = request.form.get("studentName")
         return redirect(url_for('showStudentImages', studentName=studentName))
     else:
-        return render_template('room.html', name=name)
+        joinedRoom = name
+        allStudents = StudentModel.find_studentsRoom(joinedRoom)
+
+        return render_template('room.html', name=name, allStudents=allStudents)
 
 
 @app.route('/createRoom', methods=["GET", "POST"])
@@ -441,9 +444,9 @@ class studentRegister(Resource):
         username = data['StudentUser']
         password = data['StudentPassword']
         email = data['StudentEmail']
-        client = StudentModel(username=username, email=email, password=StudentModel.generate_hash(password),
-                              status=' false')
-        client.save_to_db()
+        student = StudentModel(username=username, email=email, password=StudentModel.generate_hash(password),
+                               joinedRoom='none', newImages=0)
+        student.save_to_db()
         return 200
 
 
@@ -451,9 +454,15 @@ class receiveCode(Resource):
     def post(self):
         parser_upload = parser.copy()
         parser_upload.add_argument('roomCode', help='code cannot be blank', required=False)
+        parser_upload.add_argument('studentName', help='code cannot be blank', required=False)
         data = parser_upload.parse_args()
-        code = data['roomCode'] # receber user name mudar status
+        code = data['roomCode']
+        studentName = data['studentName']
         room = RoomModel.find_by_code(code)
+        student = StudentModel.find_by_username(studentName)
+
+        student.joinedRoom = room.roomName
+        student.save_to_db()
         if code == room.code:
             return {'code': 'sucess'}
         else:
@@ -465,23 +474,27 @@ class receiveCode(Resource):
 
 class receiveImage(Resource):
     def post(self):
-        path = "C:\\Users\danie\PycharmProjects\SuperViser\\venv\\app\serverImages"
+        path = "C:\\Users\danie\PycharmProjects\SuperViser\\venv\\app\static\serverImages"
+        dbImagepath = '/serverImages'
         parser_upload = parser.copy()
         parser_upload.add_argument('image', help='Image cannot be blank', required=False)
-        #  parser_upload.add_argument('StudentUser', help='code cannot be blank', required=False)
+        parser_upload.add_argument('studentName', help='code cannot be blank', required=False)
         data = parser_upload.parse_args()
         image = data['image']
-        # user = data['StudentUser']
-        # client = StudentModel.find_by_username(user)
+        studentName = data['studentName']
+        student = StudentModel.find_by_username(studentName)
         bytes = base64.b64decode(image)
         date = datetime.now().strftime("%d%m%Y_%H%M%S")
-        imagepath = path + "\\" + '_' + date + '.jpg'  # missing + client.username
+        imagepath = path + "\\" + student.username + date + '.jpg'
         if not os.path.isdir(path):
             os.mkdir(path)
         with open(imagepath, "wb") as img:
             img.write(bytes)
-        # imgtosave = ImageModel(username=client.username, image=imagepath)
-        # imgtosave.save_to_db()
+        imagepath = dbImagepath + '/' + student.username + date + '.jpg'
+        imgToDb = ImageModel(username=student.username, image=imagepath)
+        student.newImages += 1
+        student.save_to_db()
+        imgToDb.save_to_db()
         return 200
 
 
