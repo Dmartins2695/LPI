@@ -170,6 +170,7 @@ class StudentModel(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     joinedRoom = db.Column(db.String(120), nullable=False)
+    newImages = db.Column(db.Integer, nullable=False)
 
     def save_to_db(self):
         db.session.add(self)
@@ -333,13 +334,17 @@ def register():
     return render_template('register.html')
 
 
-@app.route('/showStudentImages/<studentName>', methods=["GET", "POST"])
-def showStudentImages(studentName):
-    if request.method == "GET":  # como por imagens na web
-        allImages = ImageModel.find_allImages(studentName)
-        for image in allImages:
-            print(image.image)
-        return render_template('showStudentImages.html', allImages=allImages, studentName=studentName)
+@app.route('/showStudentImages/<roomName>/<studentName>', methods=["GET", "POST"])
+def showStudentImages(roomName, studentName):
+    if request.method == "GET":
+        student = StudentModel.find_by_username(studentName)
+        if student:
+            allImages = ImageModel.find_allImages(studentName)
+            for image in allImages:
+                print(image.image)
+            return render_template('showStudentImages.html', allImages=allImages, studentName=studentName, roomName=roomName)
+        else:
+            return redirect(url_for('room', name=roomName))
 
 
 @app.route('/listRooms', methods=["GET", "POST"])
@@ -353,7 +358,7 @@ def listRooms():
 def room(name):
     if request.method == "POST":
         studentName = request.form.get("studentName")
-        return redirect(url_for('showStudentImages', studentName=studentName))
+        return redirect(url_for('showStudentImages', roomName=name, studentName=studentName))
     else:
         joinedRoom = name
         allStudents = StudentModel.find_studentsRoom(joinedRoom)

@@ -19,11 +19,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2517ffc2-aa8e-4b88-b18e-ddb4e6909854" name="Default Changelist" comment="asd">
+    <list default="true" id="2517ffc2-aa8e-4b88-b18e-ddb4e6909854" name="Default Changelist" comment="new">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Gui/StudentApp.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/Gui/StudentApp.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Server.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/Server.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/templates/room.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/room.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/showStudentImages.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/showStudentImages.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,7 +93,7 @@
       <recent name="C:\Users\plato\OneDrive\Documentos\GitHub\LPI\app\static" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.Server">
+  <component name="RunManager" selected="Python.StudentApp">
     <configuration name="Client" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="LPI" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -162,8 +162,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.Server" />
         <item itemvalue="Python.StudentApp" />
+        <item itemvalue="Python.Server" />
         <item itemvalue="Python.Client" />
       </list>
     </recent_temporary>
@@ -181,7 +181,7 @@
       <workItem from="1592324428223" duration="206000" />
       <workItem from="1592325093091" duration="727000" />
       <workItem from="1592326161101" duration="790000" />
-      <workItem from="1592406542319" duration="20325000" />
+      <workItem from="1592406542319" duration="21971000" />
     </task>
     <task id="LOCAL-00001" summary="asd">
       <created>1592326186784</created>
@@ -204,7 +204,14 @@
       <option name="project" value="LOCAL" />
       <updated>1592424355941</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="new">
+      <created>1592426981484</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1592426981484</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -226,7 +233,8 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="submit" />
     <MESSAGE value="asd" />
-    <option name="LAST_COMMIT_MESSAGE" value="asd" />
+    <MESSAGE value="new" />
+    <option name="LAST_COMMIT_MESSAGE" value="new" />
   </component>
   <component name="WindowStateProjectService">
     <state x="669" y="135" key="#Server" timestamp="1592324507505">
@@ -241,22 +249,22 @@
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="414" y="195" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592325504513" />
-    <state width="1877" height="295" key="GridCell.Tab.0.bottom" timestamp="1592426482751">
+    <state width="1877" height="295" key="GridCell.Tab.0.bottom" timestamp="1592428127447">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1877" height="295" key="GridCell.Tab.0.bottom/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592426482751" />
-    <state width="1877" height="295" key="GridCell.Tab.0.center" timestamp="1592426482751">
+    <state width="1877" height="295" key="GridCell.Tab.0.bottom/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592428127447" />
+    <state width="1877" height="295" key="GridCell.Tab.0.center" timestamp="1592428127447">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1877" height="295" key="GridCell.Tab.0.center/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592426482751" />
-    <state width="1877" height="295" key="GridCell.Tab.0.left" timestamp="1592426482750">
+    <state width="1877" height="295" key="GridCell.Tab.0.center/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592428127447" />
+    <state width="1877" height="295" key="GridCell.Tab.0.left" timestamp="1592428127447">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1877" height="295" key="GridCell.Tab.0.left/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592426482750" />
-    <state width="1877" height="295" key="GridCell.Tab.0.right" timestamp="1592426482751">
+    <state width="1877" height="295" key="GridCell.Tab.0.left/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592428127447" />
+    <state width="1877" height="295" key="GridCell.Tab.0.right" timestamp="1592428127447">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1877" height="295" key="GridCell.Tab.0.right/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592426482751" />
+    <state width="1877" height="295" key="GridCell.Tab.0.right/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592428127447" />
     <state width="1877" height="363" key="GridCell.Tab.1.bottom" timestamp="1592420822543">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
@@ -287,8 +295,8 @@
     <state x="514" y="269" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.1920.1080/-1920.3.1920.1080@0.0.1920.1080" timestamp="1592419702554" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/LPI$Server.coverage" NAME="Server Coverage Results" MODIFIED="1592426127574" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/LPI$Server.coverage" NAME="Server Coverage Results" MODIFIED="1592427621729" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/LPI$Client.coverage" NAME="Client Coverage Results" MODIFIED="1592407956392" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
-    <SUITE FILE_PATH="coverage/LPI$StudentApp.coverage" NAME="StudentApp Coverage Results" MODIFIED="1592425951821" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/Gui" />
+    <SUITE FILE_PATH="coverage/LPI$StudentApp.coverage" NAME="StudentApp Coverage Results" MODIFIED="1592427702990" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/Gui" />
   </component>
 </project>
