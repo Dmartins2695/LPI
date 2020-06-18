@@ -253,6 +253,7 @@ class StudentModel(db.Model):
     #     return {'users': list(map(lambda x: to_json(x), UserModel.query.all()))}
 
 
+
 class UserModel(db.Model):
     __tablename__ = 'users'
 
