@@ -106,12 +106,14 @@ class RoomModel(db.Model):
 class ImageModel(db.Model):
     __tablename__ = 'images'
 
-    def __init__(self, username, image):
+    def __init__(self, username, image, timeStamp):
         self.username = username
         self.image = image
+        self.timeStamp = timeStamp
 
     image = db.Column(db.String(120), primary_key=True, unique=True, nullable=False)
     username = db.Column(db.String(120), nullable=False)
+    timeStamp = db.Column(db.String(120), nullable=False)
 
     def save_to_db(self):
         db.session.add(self)
@@ -159,18 +161,20 @@ class ImageModel(db.Model):
 class StudentModel(db.Model):
     __tablename__ = 'students'
 
-    def __init__(self, username, email, password, joinedRoom, newImages):
+    def __init__(self, username, email, password, joinedRoom, newImages, status):
         self.username = username
         self.email = email
         self.password = password
         self.joinedRoom = joinedRoom
         self.newImages = newImages
+        self.status = status
 
     username = db.Column(db.String(120), primary_key=True, unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     joinedRoom = db.Column(db.String(120), nullable=False)
     newImages = db.Column(db.Integer, nullable=False)
+    status = db.Column(db.Integer, nullable=False)
 
     def save_to_db(self):
         db.session.add(self)
@@ -209,49 +213,6 @@ class StudentModel(db.Model):
             return {'message': '{} row(s) deleted'.format(num_rows_deleted)}
         except:
             return {'message': 'Something went wrong'}
-
-    # # client login
-    # class UserLogin(Resource):
-    #     def post(self):
-    #         parser_login = parser.copy()
-    #         parser_login.add_argument('username', help='This field cannot be blank', required=False)
-    #         parser_login.add_argument('password', help='This field cannot be blank', required=False)
-    #         data = parser_login.parse_args()
-    #         current_user = UserModel.find_by_username(data['username'])
-    #         if not current_user:
-    #             return {
-    #                 'message': 'Wrong credentials',
-    #                 'access_token': "error",
-    #                 'code': 'user_not_exists'
-    #             }
-    #
-    #         if UserModel.verify_hash(data['password'], current_user.password):
-    #             access_token = create_access_token(identity=data['username'])
-    #             refresh_token = create_refresh_token(identity=data['username'])
-    #             return {
-    #                 'message': 'Logged in as {}'.format(current_user.username),
-    #                 'access_token': access_token,
-    #                 'refresh_token': refresh_token,
-    #                 'code': 'login_with_fields'
-    #             }
-    #         else:
-    #             return {
-    #                 'message': 'Wrong credentials',
-    #                 'access_token': "error",
-    #                 'code': 'wrong_credentials'
-    #             }
-
-    # retorna todos os utilizadores
-    # @classmethod
-    # def return_all(cls):
-    #     def to_json(x):
-    #         return {
-    #             'username': x.username,
-    #             'password': x.password
-    #         }
-    #
-    #     return {'users': list(map(lambda x: to_json(x), UserModel.query.all()))}
-
 
 
 class UserModel(db.Model):
@@ -343,7 +304,8 @@ def showStudentImages(roomName, studentName):
             allImages = ImageModel.find_allImages(studentName)
             for image in allImages:
                 print(image.image)
-            return render_template('showStudentImages.html', allImages=allImages, studentName=studentName, roomName=roomName)
+            return render_template('showStudentImages.html', roomName=roomName, studentName=studentName,
+                                   allImages=allImages)
         else:
             return redirect(url_for('room', name=roomName))
 
@@ -355,16 +317,11 @@ def listRooms():
     return render_template('listRooms.html', ownedRooms=ownedRooms)
 
 
-@app.route('/room/<name>', methods=["GET", "POST"])
-def room(name):
-    if request.method == "POST":
-        studentName = request.form.get("studentName")
-        return redirect(url_for('showStudentImages', roomName=name, studentName=studentName))
-    else:
-        joinedRoom = name
-        allStudents = StudentModel.find_studentsRoom(joinedRoom)
-
-        return render_template('room.html', name=name, allStudents=allStudents)
+@app.route('/room/<roomName>', methods=["GET", "POST"])
+def room(roomName):
+    joinedRoom = roomName
+    allStudents = StudentModel.find_studentsRoom(joinedRoom)
+    return render_template('room.html', roomName=roomName, allStudents=allStudents)
 
 
 @app.route('/createRoom', methods=["GET", "POST"])
@@ -376,7 +333,7 @@ def createRoom():
         room = RoomModel(rname, code, user)
         room.save_to_db()
         flash('Sala criada com successo!', 'success')
-        return redirect(url_for('room'))
+        return redirect(url_for('room', name=rname))
     else:
         return render_template("createRoom.html")
 
@@ -451,7 +408,7 @@ class studentRegister(Resource):
         password = data['StudentPassword']
         email = data['StudentEmail']
         student = StudentModel(username=username, email=email, password=StudentModel.generate_hash(password),
-                               joinedRoom='none', newImages=0)
+                               joinedRoom='none', newImages=0, status=0)
         student.save_to_db()
         return 200
 
@@ -464,14 +421,15 @@ class receiveCode(Resource):
         data = parser_upload.parse_args()
         code = data['roomCode']
         studentName = data['studentName']
-        room = RoomModel.find_by_code(code)
-        student = StudentModel.find_by_username(studentName)
-
-        student.joinedRoom = room.roomName
-        student.save_to_db()
-        if code == room.code:
-            return {'code': 'sucess'}
-        else:
+        try:
+            room = RoomModel.find_by_code(code)
+            if code == room.code:
+                student = StudentModel.find_by_username(studentName)
+                student.joinedRoom = room.roomName
+                student.status = 1
+                student.save_to_db()
+                return {'code': 'sucess'}
+        except:
             return {
                 'code': 'error',
                 'message': 'room not found'
@@ -480,24 +438,25 @@ class receiveCode(Resource):
 
 class receiveImage(Resource):
     def post(self):
-        path = "C:\\Users\danie\PycharmProjects\SuperViser\\venv\\app\static\serverImages"
+        path = "C:\\Users\danie\OneDrive\Documentos\GitHub\LPI\\app\static\serverImages"
         dbImagepath = '/serverImages'
         parser_upload = parser.copy()
         parser_upload.add_argument('image', help='Image cannot be blank', required=False)
         parser_upload.add_argument('studentName', help='code cannot be blank', required=False)
+        parser_upload.add_argument('timestamp', help='code cannot be blank', required=False)
         data = parser_upload.parse_args()
         image = data['image']
         studentName = data['studentName']
+        timestamp = data['timestamp']
         student = StudentModel.find_by_username(studentName)
         bytes = base64.b64decode(image)
-        date = datetime.now().strftime("%d%m%Y_%H%M%S")
-        imagepath = path + "\\" + student.username + date + '.jpg'
+        imagepath = path + "\\" + student.username + timestamp + '.jpg'
         if not os.path.isdir(path):
             os.mkdir(path)
         with open(imagepath, "wb") as img:
             img.write(bytes)
-        imagepath = dbImagepath + '/' + student.username + date + '.jpg'
-        imgToDb = ImageModel(username=student.username, image=imagepath)
+        imagepath = dbImagepath + '/' + student.username + timestamp + '.jpg'
+        imgToDb = ImageModel(username=student.username, image=imagepath, timeStamp=timestamp)
         student.newImages += 1
         student.save_to_db()
         imgToDb.save_to_db()

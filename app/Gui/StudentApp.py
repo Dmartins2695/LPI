@@ -1,6 +1,6 @@
 import math
 import sys
-
+from datetime import datetime
 import base64
 import cv2
 import numpy as np
@@ -68,7 +68,7 @@ class CodePage(QMainWindow):
     def getCode(self):
         roomCode = self.code.text()
         print(roomCode)
-        json = {'roomCode': roomCode, 'studentName': credentials[0]} #mandar username
+        json = {'roomCode': roomCode, 'studentName': credentials[0]}  # mandar username
         postRequest = requests.post(url=URL + '/receiveCode', data=json)
         postJason = postRequest.json()
         if postJason['code'] == 'sucess':
@@ -86,81 +86,60 @@ class camPage(QMainWindow):
         super(camPage, self).__init__()
         loadUi('webCam.ui', self)
         self.cap = cv2.VideoCapture(0)
+        self.faceDetected = -1
+        self.printTaken = -1
+        self.closeFlag = 0
         self.btn_disable.clicked.connect(self.closeCvCam)
-        self.btn_enable.clicked.connect(self.alternative)
+        self.btn_enable.clicked.connect(self.openCvCam)
         self.btn_leave.clicked.connect(self.leave)
 
-    def alternative(self) :
+    def alternative(self):
         pixmap = QPixmap('SuperVisor.jpg')
         self.imgLabel.setPixmap(pixmap)
 
     def openCvCam(self):
+        cv2.namedWindow(credentials[0])
         self.cap = cv2.VideoCapture(0)
         face_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_frontalface_alt2.xml')
-        eye_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_eye.xml')
-        perfil_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_profileface.xml')
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
-
         currentFrame = 0
-        x1 = 0
-        y1 = 0
         while True:
             if self.cap.isOpened():
+                self.faceDetected = 0 # não encontrou cara
                 # Capture frame-by-frame
                 ret, frame = self.cap.read()
                 if ret:
                     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
-                    profile = perfil_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
-                    for (x, y, w, h) in faces:
-                        if x + x1 > x + 50 and x - x1 < x - 50 and y + y1 > y + 30 and y - y1 < y - 30:
+                    if faces is not None:
+                        self.faceDetected = 1 # encontrou cara
+                        for (x, y, w, h) in faces:
                             cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 1)
-                            roi_gray = gray[y:y + h, x:x + w]
-                            roi_color = frame[y:y + h, x:x + w]
-                            eyes = eye_cascade.detectMultiScale(roi_gray)
-                            for (ex, ey, ew, eh) in eyes:
-                                cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (100, 0, 100), 1)
-
-                    for (px, py, pw, ph) in profile:
-                        if len(profile) != 0:
-                            cv2.rectangle(frame, (px, py), (px + pw, py + ph), (0, 255, 0), 1)
-
                     # Handles the mirroring of the current frame
                     frame = cv2.flip(frame, 1)
-                    frame = QPixmap(frame)
                     # Display the resulting frame
-                    self.imgLabel.setPixmap(frame)
-                    k = cv2.waitKey(1)
-                    if k % 256 == 27:
-                        break
-                    elif k % 256 == 32:  # SPACE KEY
+                    cv2.imshow(credentials[0], frame)
+                    if self.faceDetected == 1 and self.printTaken == 1 or self.faceDetected == 0 and self.printTaken == 0: #tem cara e já tirou print ou nao tem cara e nao tirou print
                         # Sends Post to save image of the current frame in jpg file in server
                         result, frame = cv2.imencode('.jpg', frame, encode_param)
                         jpg_as_text = base64.b64encode(frame)
-
-                        json = {'image': jpg_as_text, 'studentName': credentials[0]}
-                        postRequest = requests.post(url=URL + 'receiveImage', data=json)
+                        json = {'image': jpg_as_text, 'studentName': credentials[0],
+                                'timestamp': datetime.now().strftime("%Hh%Mm%Ss")}
+                        postRequest = requests.post(url=URL + '/receiveImage', data=json)
+                        if self.faceDetected == 0: #se nao tem cara já tirou um print
+                            self.printTaken = 1 # 1º print tirado
+                    if self.faceDetected == 1: #encontrou cara novamente tira outro print
+                        self.printTaken = 0 # segundo print tirado volta ao inicio cara e sem print
+                    if self.closeFlag == 1:
+                        self.closeFlag = 0
+                        break
                     # To stop duplicate images
                     currentFrame += 1
-
-    # def displayImage(self, frame, param):
-    #     qformat = QImage.Format_Indexed8
-    #
-    #     if len(frame.shape) == 3:
-    #         if (frame.shape[2]) == 4:
-    #             qformat = QImage.Format_RGBA8888
-    #         else:
-    #             qformat = QImage.Format_RGBA8888
-    #
-    #     frame = QImage(frame, frame.shape[1], frame.shape[0], qformat)
-    #     frame = frame.rgbSwapped()
-    #     self.imgLabel.setPixmap(QPixmap.fromImage(frame))
-    #     self.imgLabel.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+        self.cap.release()
+        cv2.destroyWindow(credentials[0])
 
     def closeCvCam(self):
-        pixmap = QPixmap('blackscreen.jpg')
-        self.imgLabel.setPixmap(pixmap)
-        self.cap.release()
+        self.closeFlag = 1
 
     def leave(self):
         pass

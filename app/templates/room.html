@@ -2,28 +2,17 @@
 {% block body %}
     <p></p>
     <p></p>
-    <h1>ROOM {{ name }}</h1>
-    <div class="container">
-        <p></p>
-        <p></p>
-        <h2>Enter student name to see images</h2>
-        <form action="" method="POST">
-            <div class="form-group">
-                <label>
-                    <input type="text" name="studentName" class="form-control" placeholder="Search" required>
-                </label>
-            </div>
-            <button class="btn btn-primary" type="submit">Search</button>
-        </form>
-    </div>
+    <h1>ROOM {{ roomName }}</h1>
     <div>
     <ul class="list-group">
     {% for students in allStudents %}
-        <p></p>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            {{ students.username }}
-            <span class="badge badge-primary badge-pill">{{ students.newImages }} Images</span>
-        </li>
+        {% if students.status == 1%}
+            <p></p>
+            <a href="{{ url_for('showStudentImages',roomName = roomName, studentName = students.username) }}" class="list-group-item d-flex justify-content-between align-items-center">
+                {{ students.username }}
+                <span class="badge badge-primary badge-pill">{{ students.newImages }} Images</span>
+            </a>
+        {% endif %}
     {% endfor %}
     </ul>
     </div>
