@@ -4,10 +4,9 @@ import os
 from datetime import datetime
 from functools import wraps
 
-from flask import Flask, render_template, request, make_response, jsonify, redirect, g, url_for, session, logging, flash
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash
 from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token,
-    get_jwt_identity
+    JWTManager
 )
 from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
@@ -19,6 +18,9 @@ parser = reqparse.RequestParser()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Lolada123@localhost/LPI'
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = '%tY24$iKao@£Po&'
+# IMAGE_FOLDER = os.path.join('static', 'serverImages')
+# app.config['UPLOAD_FOLDER'] = IMAGE_FOLDER
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 jwt = JWTManager(app)
 
 
@@ -52,15 +54,18 @@ def create_tables():
 
 # DATABASE SECTION
 
-class RoomModel(db.Model):
-    __tablename__ = 'room'
 
-    def __init__(self, roomName, code):
+class RoomModel(db.Model):
+    __tablename__ = 'roomsCreated'
+
+    def __init__(self, roomName, code, owner):
         self.roomName = roomName
         self.code = code
+        self.owner = owner
 
     roomName = db.Column(db.String(120), unique=True, nullable=False)
     code = db.Column(db.String(150), primary_key=True, unique=True, nullable=False)
+    owner = db.Column(db.String(120), nullable=False)
 
     def save_to_db(self):
         db.session.add(self)
@@ -73,6 +78,10 @@ class RoomModel(db.Model):
     @classmethod
     def find_by_code(cls, code):
         return cls.query.filter_by(code=code).first()
+
+    @classmethod
+    def find_owner_Rooms(cls, owner):
+        return cls.query.filter_by(owner=owner)
 
     @staticmethod
     def generate_hash(password):
@@ -101,8 +110,8 @@ class ImageModel(db.Model):
         self.username = username
         self.image = image
 
-    image = db.Column(db.String(120), unique=True, nullable=False)
-    username = db.Column(db.String(120), primary_key=True, unique=True, nullable=False)
+    image = db.Column(db.String(120), primary_key=True, unique=True, nullable=False)
+    username = db.Column(db.String(120), nullable=False)
 
     def save_to_db(self):
         db.session.add(self)
@@ -111,8 +120,12 @@ class ImageModel(db.Model):
     # verifica se ja existe algum utilizador com esse email
 
     @classmethod
-    def find_by_email(cls, email):
-        return cls.query.filter_by(email=email).first()
+    def find_by_image(cls, image):
+        return cls.query.filter_by(image=image).first()
+
+    @classmethod
+    def find_allImages(cls, username):
+        return cls.query.filter(cls.username == username)
 
     # verifica se ja existe algum utilizador com esse username
     @classmethod
@@ -146,28 +159,34 @@ class ImageModel(db.Model):
 class StudentModel(db.Model):
     __tablename__ = 'students'
 
-    def __init__(self, username, email, password, status):
+    def __init__(self, username, email, password, joinedRoom, newImages):
         self.username = username
         self.email = email
         self.password = password
-        self.status = status
+        self.joinedRoom = joinedRoom
+        self.newImages = newImages
 
     username = db.Column(db.String(120), primary_key=True, unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
-    status = db.Column(db.String(120), nullable=False)
+    joinedRoom = db.Column(db.String(120), nullable=False)
+    newImages = db.Column(db.Integer, nullable=False)
 
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
 
+    @classmethod
+    def find_studentsRoom(cls, joinedRoom):
+        return cls.query.filter_by(joinedRoom=joinedRoom).all()
+
     # verifica se ja existe algum utilizador com esse email
 
     @classmethod
     def find_by_email(cls, email):
-        return cls.query.filter_by(email=email).first() \
- \
-            # verifica se ja existe algum utilizador com esse username
+        return cls.query.filter_by(email=email).first()
+
+        # verifica se ja existe algum utilizador com esse username
 
     @classmethod
     def find_by_username(cls, username):
@@ -315,11 +334,36 @@ def register():
     return render_template('register.html')
 
 
-@app.route('/room/<code>')
-def room(code):
-    if request.method != "GET":
-        return render_template('home.html')
-    return render_template('room.html', messages=code)
+@app.route('/showStudentImages/<roomName>/<studentName>', methods=["GET", "POST"])
+def showStudentImages(roomName, studentName):
+    if request.method == "GET":
+        student = StudentModel.find_by_username(studentName)
+        if student:
+            allImages = ImageModel.find_allImages(studentName)
+            for image in allImages:
+                print(image.image)
+            return render_template('showStudentImages.html', allImages=allImages, studentName=studentName, roomName=roomName)
+        else:
+            return redirect(url_for('room', name=roomName))
+
+
+@app.route('/listRooms', methods=["GET", "POST"])
+def listRooms():
+    user = session['user']
+    ownedRooms = RoomModel.find_owner_Rooms(user)
+    return render_template('listRooms.html', ownedRooms=ownedRooms)
+
+
+@app.route('/room/<name>', methods=["GET", "POST"])
+def room(name):
+    if request.method == "POST":
+        studentName = request.form.get("studentName")
+        return redirect(url_for('showStudentImages', roomName=name, studentName=studentName))
+    else:
+        joinedRoom = name
+        allStudents = StudentModel.find_studentsRoom(joinedRoom)
+
+        return render_template('room.html', name=name, allStudents=allStudents)
 
 
 @app.route('/createRoom', methods=["GET", "POST"])
@@ -327,10 +371,11 @@ def createRoom():
     if request.method == "POST":
         rname = request.form.get("roomname")
         code = rname + datetime.now().strftime("%d%m%Y%H%M%S")
-        room = RoomModel(rname, code)
+        user = session['user']
+        room = RoomModel(rname, code, user)
         room.save_to_db()
         flash('Sala criada com successo!', 'success')
-        return redirect(url_for('room', code=code))
+        return redirect(url_for('room'))
     else:
         return render_template("createRoom.html")
 
@@ -404,8 +449,9 @@ class studentRegister(Resource):
         username = data['StudentUser']
         password = data['StudentPassword']
         email = data['StudentEmail']
-        client = StudentModel(username=username, email=email, password=StudentModel.generate_hash(password), status=' false')
-        client.save_to_db()
+        student = StudentModel(username=username, email=email, password=StudentModel.generate_hash(password),
+                               joinedRoom='none', newImages=0)
+        student.save_to_db()
         return 200
 
 
@@ -413,11 +459,15 @@ class receiveCode(Resource):
     def post(self):
         parser_upload = parser.copy()
         parser_upload.add_argument('roomCode', help='code cannot be blank', required=False)
+        parser_upload.add_argument('studentName', help='code cannot be blank', required=False)
         data = parser_upload.parse_args()
         code = data['roomCode']
+        studentName = data['studentName']
         room = RoomModel.find_by_code(code)
-        print(code)
-        print(room)
+        student = StudentModel.find_by_username(studentName)
+
+        student.joinedRoom = room.roomName
+        student.save_to_db()
         if code == room.code:
             return {'code': 'sucess'}
         else:
@@ -429,23 +479,27 @@ class receiveCode(Resource):
 
 class receiveImage(Resource):
     def post(self):
-        path = "C:\\Users\danie\PycharmProjects\SuperViser\\venv\\app\serverImages"
+        path = "C:\\Users\danie\PycharmProjects\SuperViser\\venv\\app\static\serverImages"
+        dbImagepath = '/serverImages'
         parser_upload = parser.copy()
         parser_upload.add_argument('image', help='Image cannot be blank', required=False)
-        #  parser_upload.add_argument('StudentUser', help='code cannot be blank', required=False)
+        parser_upload.add_argument('studentName', help='code cannot be blank', required=False)
         data = parser_upload.parse_args()
         image = data['image']
-        # user = data['StudentUser']
-        # client = StudentModel.find_by_username(user)
+        studentName = data['studentName']
+        student = StudentModel.find_by_username(studentName)
         bytes = base64.b64decode(image)
         date = datetime.now().strftime("%d%m%Y_%H%M%S")
-        imagepath = path + "\\" + '_' + date + '.jpg'  # missing + client.username
+        imagepath = path + "\\" + student.username + date + '.jpg'
         if not os.path.isdir(path):
             os.mkdir(path)
         with open(imagepath, "wb") as img:
             img.write(bytes)
-        # imgtosave = ImageModel(username=client.username, image=imagepath)
-        # imgtosave.save_to_db()
+        imagepath = dbImagepath + '/' + student.username + date + '.jpg'
+        imgToDb = ImageModel(username=student.username, image=imagepath)
+        student.newImages += 1
+        student.save_to_db()
+        imgToDb.save_to_db()
         return 200
 
 

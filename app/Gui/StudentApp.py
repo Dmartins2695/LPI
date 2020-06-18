@@ -5,7 +5,7 @@ import base64
 import cv2
 import numpy as np
 import requests
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow
 from PyQt5.QtGui import QImage, QPixmap
@@ -68,7 +68,7 @@ class CodePage(QMainWindow):
     def getCode(self):
         roomCode = self.code.text()
         print(roomCode)
-        json = {'roomCode': roomCode}
+        json = {'roomCode': roomCode, 'studentName': credentials[0]} #mandar username
         postRequest = requests.post(url=URL + '/receiveCode', data=json)
         postJason = postRequest.json()
         if postJason['code'] == 'sucess':
@@ -87,8 +87,12 @@ class camPage(QMainWindow):
         loadUi('webCam.ui', self)
         self.cap = cv2.VideoCapture(0)
         self.btn_disable.clicked.connect(self.closeCvCam)
-        self.btn_enable.clicked.connect(self.openCvCam)
+        self.btn_enable.clicked.connect(self.alternative)
         self.btn_leave.clicked.connect(self.leave)
+
+    def alternative(self) :
+        pixmap = QPixmap('SuperVisor.jpg')
+        self.imgLabel.setPixmap(pixmap)
 
     def openCvCam(self):
         self.cap = cv2.VideoCapture(0)
@@ -123,9 +127,9 @@ class camPage(QMainWindow):
 
                     # Handles the mirroring of the current frame
                     frame = cv2.flip(frame, 1)
-
+                    frame = QPixmap(frame)
                     # Display the resulting frame
-                    self.displayImage(frame, 1)
+                    self.imgLabel.setPixmap(frame)
                     k = cv2.waitKey(1)
                     if k % 256 == 27:
                         break
@@ -133,28 +137,29 @@ class camPage(QMainWindow):
                         # Sends Post to save image of the current frame in jpg file in server
                         result, frame = cv2.imencode('.jpg', frame, encode_param)
                         jpg_as_text = base64.b64encode(frame)
-                        print("jpg_as_text")
-                        print(jpg_as_text)
-                        json = {'image': jpg_as_text}
+
+                        json = {'image': jpg_as_text, 'studentName': credentials[0]}
                         postRequest = requests.post(url=URL + 'receiveImage', data=json)
                     # To stop duplicate images
                     currentFrame += 1
 
-    def displayImage(self, frame, param):
-        qformat = QImage.Format_Indexed8
-
-        if len(frame.shape) == 3:
-            if (frame.shape[2]) == 4:
-                qformat = QImage.Format_RGBA8888
-            else:
-                qformat = QImage.Format_RGBA8888
-
-        frame = QImage(frame, frame.shape[1], frame.shape[0], qformat)
-        frame = frame.rgbSwapped()
-        self.imgLabel.setPixmap(QPixmap.fromImage(frame))
-        self.imgLabel.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+    # def displayImage(self, frame, param):
+    #     qformat = QImage.Format_Indexed8
+    #
+    #     if len(frame.shape) == 3:
+    #         if (frame.shape[2]) == 4:
+    #             qformat = QImage.Format_RGBA8888
+    #         else:
+    #             qformat = QImage.Format_RGBA8888
+    #
+    #     frame = QImage(frame, frame.shape[1], frame.shape[0], qformat)
+    #     frame = frame.rgbSwapped()
+    #     self.imgLabel.setPixmap(QPixmap.fromImage(frame))
+    #     self.imgLabel.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
     def closeCvCam(self):
+        pixmap = QPixmap('blackscreen.jpg')
+        self.imgLabel.setPixmap(pixmap)
         self.cap.release()
 
     def leave(self):
