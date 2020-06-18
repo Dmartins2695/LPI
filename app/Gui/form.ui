@@ -13,10 +13,6 @@
   <property name="windowTitle">
    <string>SuperVisor</string>
   </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>../static/serverImages/SuperVisor.jpg</normaloff>../static/serverImages/SuperVisor.jpg</iconset>
-  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="btn_login">
     <property name="geometry">
@@ -204,8 +200,6 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources>
-  <include location="../static/serverImages/img.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

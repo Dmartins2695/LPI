@@ -1,7 +1,0 @@
-{%  extends "layout.html" %}
-    {% block body %}
-        <h1>My Rooms</h1>
-    {% for rooms in ownedRooms %}
-        <li><a href="{{ url_for('room',name = rooms.roomName) }}">{{ rooms.roomName }}</a></li>
-    {% endfor %}
-    {%  endblock %}
