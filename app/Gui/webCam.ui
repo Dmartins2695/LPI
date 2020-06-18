@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>SuperVisor</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../static/serverImages/SuperVisor.jpg</normaloff>../static/serverImages/SuperVisor.jpg</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="imgLabel">
     <property name="geometry">
