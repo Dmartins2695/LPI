@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.uic import loadUi
 
-URL = "http://192.168.1.99:5000"
+URL = "http://192.168.1.81:5000"
 
 credentials = []
 
