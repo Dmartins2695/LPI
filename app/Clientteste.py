@@ -1,54 +1,55 @@
-import math
-
-import base64
-import cv2
-import numpy as np
-import requests
-from PyQt5 import QtCore, QtGui, QtWidget
-
-
-class Ui_MainWindow(object):
+class camPage(QMainWindow):
     def __init__(self):
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.code = QtWidgets.QLineEdit(self.centralwidget)
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.btn1 = QtWidgets.QPushButton(self.centralwidget)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        super(camPage, self).__init__()
+        loadUi('webCam.ui', self)
+        self.cap = cv2.VideoCapture(0)
+        self.printTaken = -1
+        self.closeFlag = 0
+        self.currentFrame = 0
+        self.face_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_frontalface_alt2.xml')
+        self.encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+        self.btn_disable.clicked.connect(self.closeCvCam)
+        self.btn_enable.clicked.connect(self.openCvCam)
+        self.btn_leave.clicked.connect(self.leave)
 
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
-        self.centralwidget.setObjectName("centralwidget")
-        self.btn1.setGeometry(QtCore.QRect(330, 320, 75, 23))
-        self.btn1.setObjectName("btn1")
-        self.label.setGeometry(QtCore.QRect(240, 230, 61, 31))
-        self.label.setObjectName("label")
-        self.code.setGeometry(QtCore.QRect(240, 270, 281, 31))
-        self.code.setObjectName("code")
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+    def sendPrintimg(self, frame):
+        result, frame = cv2.imencode('.jpg', frame, self.encode_param)
+        jpg_as_text = base64.b64encode(frame)
+        json = {'image': jpg_as_text, 'studentName': credentials[0],
+                'timestamp': datetime.now().strftime("%Hh%Mm%Ss")}
+        postRequest = requests.post(url=URL + '/receiveImage', data=json)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+    def openCvCam(self):
+        cv2.namedWindow(credentials[0])
+        while True:
+            if self.cap.isOpened():
+                ret, frame = self.cap.read()
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                faces = self.face_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
+                if len(faces) > 0:
+                    if self.printTaken == 1:
+                        self.sendPrintimg(frame)
+                    self.printTaken = 0
+                else:
+                    if self.printTaken == 0:
+                        self.sendPrintimg(frame)
+                        self.printTaken = 1
+                # Handles the mirroring of the current frame
+                frame = cv2.flip(frame, 1)
+                # Display the resulting frame
+                cv2.imshow(credentials[0], frame)
+                if self.closeFlag == 1:
+                    self.closeFlag = 0
+                    break
+                # To stop duplicate images
+                self.currentFrame += 1
+        self.cap.release()
+        cv2.destroyWindow(credentials[0])
 
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.btn1.setText(_translate("MainWindow", "PushButton"))
-        self.label.setText(_translate("MainWindow", "ROOM CODE"))
+
+    def closeCvCam(self):
+        self.closeFlag = 1
 
 
-if __name__ == "__main__":
-    import sys
-
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
+    def leave(self):
+        pass
