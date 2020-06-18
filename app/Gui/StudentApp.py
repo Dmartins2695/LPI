@@ -105,6 +105,8 @@ class camPage(QMainWindow):
     def openCvCam(self):
         cv2.namedWindow(credentials[0])
         while True:
+            cv2.namedWindow(credentials[0])
+            self.cap = cv2.VideoCapture(0)
             if self.cap.isOpened():
                 ret, frame = self.cap.read()
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -129,10 +131,8 @@ class camPage(QMainWindow):
         self.cap.release()
         cv2.destroyWindow(credentials[0])
 
-
     def closeCvCam(self):
         self.closeFlag = 1
-
 
     def leave(self):
         pass
