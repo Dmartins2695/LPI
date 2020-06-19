@@ -329,9 +329,10 @@ def listRooms():
 
 @app.route('/room/<roomName>', methods=["GET", "POST"])
 def room(roomName):
+    roomToGetCode = RoomModel.find_by_roomName(roomName)
     joinedRoom = roomName
     allStudents = StudentModel.find_studentsRoom(joinedRoom)
-    return render_template('room.html', roomName=roomName, allStudents=allStudents)
+    return render_template('room.html', roomName=roomName, allStudents=allStudents, code=roomToGetCode.code)
 
 
 @app.route('/createRoom', methods=["GET", "POST"])
@@ -341,9 +342,13 @@ def createRoom():
         code = rname + datetime.now().strftime("%d%m%Y%H%M%S")
         user = session['user']
         room = RoomModel(rname, code, user)
-        room.save_to_db()
-        flash('Sala criada com successo!', 'success')
-        return redirect(url_for('room', name=rname))
+        try:
+            room.save_to_db()
+            flash('Sala criada com successo!', 'success')
+            return redirect(url_for('room', roomName=rname))
+        except:
+            flash('Sala já existe!', 'danger')
+            return render_template("createRoom.html")
     else:
         return render_template("createRoom.html")
 
@@ -462,16 +467,19 @@ class receiveImage(Resource):
         student = StudentModel.find_by_username(studentName)
         bytes = base64.b64decode(image)
         imagepath = path + "\\" + student.username + timestamp + '.jpg'
-        if not os.path.isdir(path):
-            os.mkdir(path)
-        with open(imagepath, "wb") as img:
-            img.write(bytes)
-        imagepath = dbImagepath + '/' + student.username + timestamp + '.jpg'
-        imgToDb = ImageModel(username=student.username, image=imagepath, timeStamp=timestamp)
-        student.newImages += 1
-        student.save_to_db()
-        imgToDb.save_to_db()
-        return 200
+        try:
+            if not os.path.isdir(path):
+                os.mkdir(path)
+            with open(imagepath, "wb") as img:
+                img.write(bytes)
+            imagepath = dbImagepath + '/' + student.username + timestamp + '.jpg'
+            imgToDb = ImageModel(username=student.username, image=imagepath, timeStamp=timestamp)
+            student.newImages += 1
+            student.save_to_db()
+            imgToDb.save_to_db()
+            return 200
+        except:
+            return
 
 
 class receiveLeave(Resource):
