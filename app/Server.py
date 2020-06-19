@@ -161,13 +161,14 @@ class ImageModel(db.Model):
 class StudentModel(db.Model):
     __tablename__ = 'students'
 
-    def __init__(self, username, email, password, joinedRoom, newImages, status):
+    def __init__(self, username, email, password, joinedRoom, newImages, status, timeStamp):
         self.username = username
         self.email = email
         self.password = password
         self.joinedRoom = joinedRoom
         self.newImages = newImages
         self.status = status
+        self.timeStamp = timeStamp
 
     username = db.Column(db.String(120), primary_key=True, unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -175,6 +176,7 @@ class StudentModel(db.Model):
     joinedRoom = db.Column(db.String(120), nullable=False)
     newImages = db.Column(db.Integer, nullable=False)
     status = db.Column(db.Integer, nullable=False)
+    timeStamp = db.Column(db.String(120))
 
     def save_to_db(self):
         db.session.add(self)
@@ -305,9 +307,9 @@ def showStudentImages(roomName, studentName):
             for image in allImages:
                 print(image.image)
             return render_template('showStudentImages.html', roomName=roomName, studentName=studentName,
-                                   allImages=allImages)
+                                   allImages=allImages, student=student)
         else:
-            return redirect(url_for('room', name=roomName))
+            return redirect(url_for('room', roomName=roomName))
 
 
 @app.route('/listRooms', methods=["GET", "POST"])
@@ -408,7 +410,7 @@ class studentRegister(Resource):
         password = data['StudentPassword']
         email = data['StudentEmail']
         student = StudentModel(username=username, email=email, password=StudentModel.generate_hash(password),
-                               joinedRoom='none', newImages=0, status=0)
+                               joinedRoom='none', newImages=0, status=0, timeStamp=None)
         student.save_to_db()
         return 200
 
@@ -463,7 +465,28 @@ class receiveImage(Resource):
         return 200
 
 
+class receiveLeave(Resource):
+    def post(self):
+        parser_upload = parser.copy()
+        parser_upload.add_argument('logout', help='Image cannot be blank', required=False)
+        parser_upload.add_argument('studentName', help='code cannot be blank', required=False)
+        parser_upload.add_argument('timestamp', help='code cannot be blank', required=False)
+        data = parser_upload.parse_args()
+
+        logout = data['logout']
+        timestamp = data['timestamp']
+        studentName = data['studentName']
+        student = StudentModel.find_by_username(studentName)
+        student.status = logout
+        student.timeStamp = timestamp
+        print(logout)
+        print(student.status)
+        print(student.timeStamp)
+        student.save_to_db()
+
+
 api.add_resource(receiveImage, '/receiveImage', endpoint="receiveImage")
+api.add_resource(receiveLeave, '/receiveLeave', endpoint="receiveLeave")
 api.add_resource(receiveCode, '/receiveCode', endpoint="receiveCode")
 api.add_resource(studentLogin, '/studentLogin', endpoint="studentLogin")
 api.add_resource(studentRegister, '/studentRegister', endpoint="studentRegister")

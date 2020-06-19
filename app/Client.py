@@ -35,20 +35,22 @@ while True:
     if cap.isOpened():
         # Capture frame-by-frame
         ret, frame = cap.read()
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.7, minNeighbors=5)
-        if len(faces) > 0:
-            if printTaken == 1:
-                sendPrintimg(frame)
-            printTaken = 0
-            for (x, y, w, h) in faces:
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 1)
-        else:
-            if printTaken == 0:
-                sendPrintimg(frame)
-                printTaken = 1
-        # Handles the mirroring of the current frame
+
+        # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        # faces = face_cascade.detectMultiScale(gray, scaleFactor=1.7, minNeighbors=5)
+        # if len(faces) > 0:
+        #    # if printTaken == 1:
+        #        # sendPrintimg(frame)
+        #     printTaken = 0
+        #     for (x, y, w, h) in faces:
+        #         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 1)
+        # else:
+        #     if printTaken == 0:
+        #        # sendPrintimg(frame)
+        #         printTaken = 1
+        # # Handles the mirroring of the current frame
         frame = cv2.flip(frame, 1)
+
         # Display the resulting frame
         cv2.imshow('frame', frame)
         k = cv2.waitKey(1)

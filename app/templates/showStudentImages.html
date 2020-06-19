@@ -6,9 +6,15 @@
         <div>
             <img src="{{ url_for('static', filename=image.image) }}" width="320" height="240"/>
             <p>{{ image.timeStamp }}</p>
+
         </div>
 
     {% endfor %}
+    {% if student.status == 0 %}
+        {% if student.timeStamp is not none %}
+            <p> Logout time: {{ student.timeStamp }}</p>
+        {% endif %}
+    {% endif %}
     <div>
         <p></p>
         <p></p>

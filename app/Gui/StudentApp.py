@@ -1,14 +1,12 @@
-import math
 import sys
 from datetime import datetime
 import base64
+import sys
+from datetime import datetime
+
 import cv2
-import numpy as np
 import requests
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow
-from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.uic import loadUi
 
 URL = "http://192.168.1.81:5000"
@@ -85,11 +83,7 @@ class camPage(QMainWindow):
     def __init__(self):
         super(camPage, self).__init__()
         loadUi('webCam.ui', self)
-        self.cap = cv2.VideoCapture(0)
         self.printTaken = -1
-        self.closeFlag = 0
-        self.currentFrame = 0
-        self.face_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_frontalface_alt2.xml')
         self.encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
         self.btn_disable.clicked.connect(self.closeCvCam)
         self.btn_enable.clicked.connect(self.openCvCam)
@@ -103,39 +97,40 @@ class camPage(QMainWindow):
         postRequest = requests.post(url=URL + '/receiveImage', data=json)
 
     def openCvCam(self):
-        cv2.namedWindow(credentials[0])
-        while True:
-            cv2.namedWindow(credentials[0])
-            self.cap = cv2.VideoCapture(0)
-            if self.cap.isOpened():
-                ret, frame = self.cap.read()
+        face_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_frontalface_alt2.xml')
+        cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+
+        while (cap.isOpened()):
+            ret, frame = cap.read()
+            if ret == True:
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                faces = self.face_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
-                if len(faces) > 0:
-                    if self.printTaken == 1:
-                        self.sendPrintimg(frame)
-                    self.printTaken = 0
-                else:
-                    if self.printTaken == 0:
-                        self.sendPrintimg(frame)
-                        self.printTaken = 1
-                # Handles the mirroring of the current frame
+                faces = face_cascade.detectMultiScale(gray, scaleFactor=1.7, minNeighbors=5)
+                # if len(faces) > 0:
+                #     if self.printTaken == 1:
+                #         self.sendPrintimg(frame)
+                #     self.printTaken = 0
+                #     for (x, y, w, h) in faces:
+                #         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 1)
+                # else:
+                #     if self.printTaken == 0:
+                #         self.sendPrintimg(frame)
+                #         self.printTaken = 1
                 frame = cv2.flip(frame, 1)
-                # Display the resulting frame
-                cv2.imshow(credentials[0], frame)
-                if self.closeFlag == 1:
-                    self.closeFlag = 0
-                    break
-                # To stop duplicate images
-                self.currentFrame += 1
-        self.cap.release()
-        cv2.destroyWindow(credentials[0])
+                cv2.imshow('frame', frame)
+            else:
+                break
+            # Release everything if job is finished
+        cap.release()
+        cv2.destroyAllWindows()
 
     def closeCvCam(self):
-        self.closeFlag = 1
+        pass
 
     def leave(self):
-        pass
+        json = {'studentName': credentials[0],
+                'logout': 0, 'timestamp': datetime.now().strftime("%Hh%Mm%Ss")}
+        postRequest = requests.post(url=URL + '/receiveLeave', data=json)
+        self.close()
 
 
 app = QApplication(sys.argv)
