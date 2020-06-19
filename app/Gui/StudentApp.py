@@ -1,5 +1,3 @@
-import sys
-from datetime import datetime
 import base64
 import sys
 from datetime import datetime
@@ -96,7 +94,8 @@ class camPage(QMainWindow):
         json = {'image': jpg_as_text, 'studentName': credentials[0],
                 'timestamp': datetime.now().strftime("%Hh%Mm%Ss")}
         postRequest = requests.post(url=URL + '/receiveImage', data=json)
-    #LPI18062020203648
+
+    # LPI18062020203648
     def openCvCam(self):
         face_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_frontalface_alt2.xml')
         cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
@@ -121,7 +120,7 @@ class camPage(QMainWindow):
                 frame = cv2.flip(frame, 1)
                 cv2.imshow('frame', frame)
                 k = cv2.waitKey(1)
-                if k % 256 == 27 or self.disableCam==1:
+                if k % 256 == 27 or self.disableCam == 1:
                     self.disableCam = 0
                     break
             else:
@@ -132,7 +131,7 @@ class camPage(QMainWindow):
         cv2.destroyAllWindows()
 
     def closeCvCam(self):
-        self.disableCam=1
+        self.disableCam = 1
         json = {'studentName': credentials[0],
                 'disable': 1, 'timestamp': datetime.now().strftime("%Hh%Mm%Ss")}
         postRequest = requests.post(url=URL + '/receiveDisable', data=json)

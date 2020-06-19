@@ -161,7 +161,8 @@ class ImageModel(db.Model):
 class StudentModel(db.Model):
     __tablename__ = 'students'
 
-    def __init__(self, username, email, password, joinedRoom, newImages, status, timeStamp, disable, disabletimeStampo,enabletimeStampo,enable):
+    def __init__(self, username, email, password, joinedRoom, newImages, status, timeStamp, disable, disabletimeStampo,
+                 enabletimeStampo, enable):
         self.username = username
         self.email = email
         self.password = password
@@ -424,7 +425,7 @@ class studentRegister(Resource):
         email = data['StudentEmail']
         student = StudentModel(username=username, email=email, password=StudentModel.generate_hash(password),
                                joinedRoom='none', newImages=0, status=0, timeStamp=None, disable=0,
-                               disabletimeStampo=None,enabletimeStampo=None,enable=0)
+                               disabletimeStampo=None, enabletimeStampo=None, enable=0)
         student.save_to_db()
         return 200
 
@@ -515,6 +516,7 @@ class receiveDisable(Resource):
         student.disabletimeStampo = timestamp
         print(student.disabletimeStampo)
         student.save_to_db()
+
 
 class receiveEnable(Resource):
     def post(self):
