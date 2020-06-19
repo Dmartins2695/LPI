@@ -1,17 +1,13 @@
-import math
-import sys
-
 import base64
+import sys
+from datetime import datetime
+
 import cv2
-import numpy as np
 import requests
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow
-from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.uic import loadUi
 
-URL = "http://192.168.1.99:5000"
+URL = "http://192.168.1.81:5000"
 
 credentials = []
 
@@ -68,7 +64,7 @@ class CodePage(QMainWindow):
     def getCode(self):
         roomCode = self.code.text()
         print(roomCode)
-        json = {'roomCode': roomCode, 'studentName': credentials[0]} #mandar username
+        json = {'roomCode': roomCode, 'studentName': credentials[0]}  # mandar username
         postRequest = requests.post(url=URL + '/receiveCode', data=json)
         postJason = postRequest.json()
         if postJason['code'] == 'sucess':
@@ -85,85 +81,66 @@ class camPage(QMainWindow):
     def __init__(self):
         super(camPage, self).__init__()
         loadUi('webCam.ui', self)
-        self.cap = cv2.VideoCapture(0)
+        self.printTaken = -1
+        self.disableCam = 0
+        self.encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
         self.btn_disable.clicked.connect(self.closeCvCam)
-        self.btn_enable.clicked.connect(self.alternative)
+        self.btn_enable.clicked.connect(self.openCvCam)
         self.btn_leave.clicked.connect(self.leave)
 
-    def alternative(self) :
-        pixmap = QPixmap('SuperVisor.jpg')
-        self.imgLabel.setPixmap(pixmap)
+    def sendPrintimg(self, frame):
+        result, frame = cv2.imencode('.jpg', frame, self.encode_param)
+        jpg_as_text = base64.b64encode(frame)
+        json = {'image': jpg_as_text, 'studentName': credentials[0],
+                'timestamp': datetime.now().strftime("%Hh%Mm%Ss")}
+        postRequest = requests.post(url=URL + '/receiveImage', data=json)
 
+    # LPI18062020203648
     def openCvCam(self):
-        self.cap = cv2.VideoCapture(0)
         face_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_frontalface_alt2.xml')
-        eye_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_eye.xml')
-        perfil_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_profileface.xml')
-        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
-
-        currentFrame = 0
-        x1 = 0
-        y1 = 0
-        while True:
-            if self.cap.isOpened():
-                # Capture frame-by-frame
-                ret, frame = self.cap.read()
-                if ret:
-                    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
-                    profile = perfil_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
+        cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        json = {'studentName': credentials[0],
+                'enable': 1, 'timestamp': datetime.now().strftime("%Hh%Mm%Ss")}
+        postRequest = requests.post(url=URL + '/receiveEnable', data=json)
+        while (cap.isOpened()):
+            ret, frame = cap.read()
+            if ret == True:
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                faces = face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=10)
+                if len(faces) > 0:
+                    if self.printTaken == 1:
+                        self.sendPrintimg(frame)
+                    self.printTaken = 0
                     for (x, y, w, h) in faces:
-                        if x + x1 > x + 50 and x - x1 < x - 50 and y + y1 > y + 30 and y - y1 < y - 30:
-                            cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 1)
-                            roi_gray = gray[y:y + h, x:x + w]
-                            roi_color = frame[y:y + h, x:x + w]
-                            eyes = eye_cascade.detectMultiScale(roi_gray)
-                            for (ex, ey, ew, eh) in eyes:
-                                cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (100, 0, 100), 1)
+                        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 1)
+                else:
+                    if self.printTaken == 0:
+                        self.sendPrintimg(frame)
+                    self.printTaken = 1
+                frame = cv2.flip(frame, 1)
+                cv2.imshow('frame', frame)
+                k = cv2.waitKey(1)
+                if k % 256 == 27 or self.disableCam == 1:
+                    self.disableCam = 0
+                    break
+            else:
+                break
 
-                    for (px, py, pw, ph) in profile:
-                        if len(profile) != 0:
-                            cv2.rectangle(frame, (px, py), (px + pw, py + ph), (0, 255, 0), 1)
-
-                    # Handles the mirroring of the current frame
-                    frame = cv2.flip(frame, 1)
-                    frame = QPixmap(frame)
-                    # Display the resulting frame
-                    self.imgLabel.setPixmap(frame)
-                    k = cv2.waitKey(1)
-                    if k % 256 == 27:
-                        break
-                    elif k % 256 == 32:  # SPACE KEY
-                        # Sends Post to save image of the current frame in jpg file in server
-                        result, frame = cv2.imencode('.jpg', frame, encode_param)
-                        jpg_as_text = base64.b64encode(frame)
-
-                        json = {'image': jpg_as_text, 'studentName': credentials[0]}
-                        postRequest = requests.post(url=URL + 'receiveImage', data=json)
-                    # To stop duplicate images
-                    currentFrame += 1
-
-    # def displayImage(self, frame, param):
-    #     qformat = QImage.Format_Indexed8
-    #
-    #     if len(frame.shape) == 3:
-    #         if (frame.shape[2]) == 4:
-    #             qformat = QImage.Format_RGBA8888
-    #         else:
-    #             qformat = QImage.Format_RGBA8888
-    #
-    #     frame = QImage(frame, frame.shape[1], frame.shape[0], qformat)
-    #     frame = frame.rgbSwapped()
-    #     self.imgLabel.setPixmap(QPixmap.fromImage(frame))
-    #     self.imgLabel.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+        # Release everything if job is finished
+        cap.release()
+        cv2.destroyAllWindows()
 
     def closeCvCam(self):
-        pixmap = QPixmap('blackscreen.jpg')
-        self.imgLabel.setPixmap(pixmap)
-        self.cap.release()
+        self.disableCam = 1
+        json = {'studentName': credentials[0],
+                'disable': 1, 'timestamp': datetime.now().strftime("%Hh%Mm%Ss")}
+        postRequest = requests.post(url=URL + '/receiveDisable', data=json)
 
     def leave(self):
-        pass
+        json = {'studentName': credentials[0],
+                'logout': 0, 'timestamp': datetime.now().strftime("%Hh%Mm%Ss")}
+        postRequest = requests.post(url=URL + '/receiveLeave', data=json)
+        self.close()
 
 
 app = QApplication(sys.argv)
