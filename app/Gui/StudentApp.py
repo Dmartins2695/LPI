@@ -95,7 +95,7 @@ class camPage(QMainWindow):
         json = {'image': jpg_as_text, 'studentName': credentials[0],
                 'timestamp': datetime.now().strftime("%Hh%Mm%Ss")}
         postRequest = requests.post(url=URL + '/receiveImage', data=json)
-
+    #LPI18062020203648
     def openCvCam(self):
         face_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_frontalface_alt2.xml')
         cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
@@ -105,21 +105,24 @@ class camPage(QMainWindow):
             if ret == True:
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 faces = face_cascade.detectMultiScale(gray, scaleFactor=1.7, minNeighbors=5)
-                # if len(faces) > 0:
-                #     if self.printTaken == 1:
-                #         self.sendPrintimg(frame)
-                #     self.printTaken = 0
-                #     for (x, y, w, h) in faces:
-                #         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 1)
-                # else:
-                #     if self.printTaken == 0:
-                #         self.sendPrintimg(frame)
-                #         self.printTaken = 1
+                if len(faces) > 0:
+                    if self.printTaken == 1:
+                        self.sendPrintimg(frame)
+                    self.printTaken = 0
+                    for (x, y, w, h) in faces:
+                        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 1)
+                else:
+                    if self.printTaken == 0:
+                        self.sendPrintimg(frame)
+                    self.printTaken = 1
                 frame = cv2.flip(frame, 1)
                 cv2.imshow('frame', frame)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
             else:
                 break
-            # Release everything if job is finished
+
+        # Release everything if job is finished
         cap.release()
         cv2.destroyAllWindows()
 

@@ -37,7 +37,7 @@ while True:
         ret, frame = cap.read()
 
         # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        # faces = face_cascade.detectMultiScale(gray, scaleFactor=1.7, minNeighbors=5)
+        #
         # if len(faces) > 0:
         #    # if printTaken == 1:
         #        # sendPrintimg(frame)
