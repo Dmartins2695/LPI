@@ -15,6 +15,16 @@
             <p> Logout time: {{ student.timeStamp }}</p>
         {% endif %}
     {% endif %}
+    {% if student.disable == 1 %}
+        {% if student.disabletimeStampo is not none %}
+            <p> WebCam Disable time: {{ student.disabletimeStampo }}</p>
+        {% endif %}
+    {% endif %}
+    {% if student.enable == 1 %}
+        {% if student.enabletimeStampo is not none %}
+            <p> WebCam Enable time: {{ student.enabletimeStampo }}</p>
+        {% endif %}
+    {% endif %}
     <div>
         <p></p>
         <p></p>

@@ -161,7 +161,7 @@ class ImageModel(db.Model):
 class StudentModel(db.Model):
     __tablename__ = 'students'
 
-    def __init__(self, username, email, password, joinedRoom, newImages, status, timeStamp):
+    def __init__(self, username, email, password, joinedRoom, newImages, status, timeStamp, disable, disabletimeStampo,enabletimeStampo,enable):
         self.username = username
         self.email = email
         self.password = password
@@ -169,6 +169,10 @@ class StudentModel(db.Model):
         self.newImages = newImages
         self.status = status
         self.timeStamp = timeStamp
+        self.disable = disable
+        self.enable = enable
+        self.disabletimeStampo = disabletimeStampo
+        self.enabletimeStampo = enabletimeStampo
 
     username = db.Column(db.String(120), primary_key=True, unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -177,6 +181,10 @@ class StudentModel(db.Model):
     newImages = db.Column(db.Integer, nullable=False)
     status = db.Column(db.Integer, nullable=False)
     timeStamp = db.Column(db.String(120))
+    disabletimeStampo = db.Column(db.String(120))
+    enabletimeStampo = db.Column(db.String(120))
+    disable = db.Column(db.Integer, nullable=False)
+    enable = db.Column(db.Integer, nullable=False)
 
     def save_to_db(self):
         db.session.add(self)
@@ -410,7 +418,8 @@ class studentRegister(Resource):
         password = data['StudentPassword']
         email = data['StudentEmail']
         student = StudentModel(username=username, email=email, password=StudentModel.generate_hash(password),
-                               joinedRoom='none', newImages=0, status=0, timeStamp=None)
+                               joinedRoom='none', newImages=0, status=0, timeStamp=None, disable=0,
+                               disabletimeStampo=None,enabletimeStampo=None,enable=0)
         student.save_to_db()
         return 200
 
@@ -479,13 +488,47 @@ class receiveLeave(Resource):
         student = StudentModel.find_by_username(studentName)
         student.status = logout
         student.timeStamp = timestamp
-        print(logout)
-        print(student.status)
-        print(student.timeStamp)
+        student.save_to_db()
+
+
+class receiveDisable(Resource):
+    def post(self):
+        parser_upload = parser.copy()
+        parser_upload.add_argument('disable', help='Image cannot be blank', required=False)
+        parser_upload.add_argument('studentName', help='code cannot be blank', required=False)
+        parser_upload.add_argument('timestamp', help='code cannot be blank', required=False)
+        data = parser_upload.parse_args()
+
+        disable = data['disable']
+        timestamp = data['timestamp']
+        studentName = data['studentName']
+        student = StudentModel.find_by_username(studentName)
+        student.disable = disable
+        student.disabletimeStampo = timestamp
+        print(student.disabletimeStampo)
+        student.save_to_db()
+
+class receiveEnable(Resource):
+    def post(self):
+        parser_upload = parser.copy()
+        parser_upload.add_argument('enable', help='Image cannot be blank', required=False)
+        parser_upload.add_argument('studentName', help='code cannot be blank', required=False)
+        parser_upload.add_argument('timestamp', help='code cannot be blank', required=False)
+        data = parser_upload.parse_args()
+
+        enable = data['enable']
+        timestamp = data['timestamp']
+        studentName = data['studentName']
+        student = StudentModel.find_by_username(studentName)
+        student.enable = enable
+        student.enabletimeStampo = timestamp
+        print(student.enabletimeStampo)
         student.save_to_db()
 
 
 api.add_resource(receiveImage, '/receiveImage', endpoint="receiveImage")
+api.add_resource(receiveDisable, '/receiveDisable', endpoint="receiveDisable")
+api.add_resource(receiveEnable, '/receiveEnable', endpoint="receiveEnable")
 api.add_resource(receiveLeave, '/receiveLeave', endpoint="receiveLeave")
 api.add_resource(receiveCode, '/receiveCode', endpoint="receiveCode")
 api.add_resource(studentLogin, '/studentLogin', endpoint="studentLogin")

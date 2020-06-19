@@ -84,6 +84,7 @@ class camPage(QMainWindow):
         super(camPage, self).__init__()
         loadUi('webCam.ui', self)
         self.printTaken = -1
+        self.disableCam = 0
         self.encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
         self.btn_disable.clicked.connect(self.closeCvCam)
         self.btn_enable.clicked.connect(self.openCvCam)
@@ -99,7 +100,9 @@ class camPage(QMainWindow):
     def openCvCam(self):
         face_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_frontalface_alt2.xml')
         cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-
+        json = {'studentName': credentials[0],
+                'enable': 1, 'timestamp': datetime.now().strftime("%Hh%Mm%Ss")}
+        postRequest = requests.post(url=URL + '/receiveEnable', data=json)
         while (cap.isOpened()):
             ret, frame = cap.read()
             if ret == True:
@@ -117,7 +120,9 @@ class camPage(QMainWindow):
                     self.printTaken = 1
                 frame = cv2.flip(frame, 1)
                 cv2.imshow('frame', frame)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
+                k = cv2.waitKey(1)
+                if k % 256 == 27 or self.disableCam==1:
+                    self.disableCam = 0
                     break
             else:
                 break
@@ -127,7 +132,10 @@ class camPage(QMainWindow):
         cv2.destroyAllWindows()
 
     def closeCvCam(self):
-        pass
+        self.disableCam=1
+        json = {'studentName': credentials[0],
+                'disable': 1, 'timestamp': datetime.now().strftime("%Hh%Mm%Ss")}
+        postRequest = requests.post(url=URL + '/receiveDisable', data=json)
 
     def leave(self):
         json = {'studentName': credentials[0],
