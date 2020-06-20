@@ -102,6 +102,7 @@ class RoomModel(db.Model):
         except:
             return {'message': 'Something went wrong'}
 
+
 class StudentModel(db.Model):
     __tablename__ = 'students'
 
@@ -160,6 +161,61 @@ class StudentModel(db.Model):
     def verify_hash(password, hash):
         return sha256.verify(password, hash)
 
+    @classmethod
+    def delete_all(cls):
+        try:
+            num_rows_deleted = db.session.query(cls).delete()
+            db.session.commit()
+            return {'message': '{} row(s) deleted'.format(num_rows_deleted)}
+        except:
+            return {'message': 'Something went wrong'}
+
+
+class ImageModel(db.Model):
+    __tablename__ = 'images'
+
+    def __init__(self, username, image, timeStamp):
+        self.username = username
+        self.image = image
+        self.timeStamp = timeStamp
+
+    image = db.Column(db.String(120), primary_key=True, unique=True, nullable=False)
+    username = db.Column(db.String(120), nullable=False)
+    timeStamp = db.Column(db.String(120), nullable=False)
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    # verifica se ja existe algum utilizador com esse email
+
+    @classmethod
+    def find_by_image(cls, image):
+        return cls.query.filter_by(image=image).first()
+
+    @classmethod
+    def find_allImages(cls, username):
+        return cls.query.filter(cls.username == username)
+
+    # verifica se ja existe algum utilizador com esse username
+    @classmethod
+    def find_by_username(cls, username):
+        return cls.query.filter_by(username=username).first()
+
+    @staticmethod
+    def generate_hash(password):
+        return sha256.hash(password)
+
+    # para verificar hash no login
+    @staticmethod
+    def verify_hash(password, hash):
+        return sha256.verify(password, hash)
+
+    @classmethod
+    def find_images_by_id(cls, id):
+        return ImageModel.find_images_by_id(id)
+
+    # elimina todos os utilizadores
     @classmethod
     def delete_all(cls):
         try:

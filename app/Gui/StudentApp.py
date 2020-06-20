@@ -106,7 +106,7 @@ class camPage(QMainWindow):
             ret, frame = cap.read()
             if ret == True:
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                faces = face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=10)
+                faces = face_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=3)
                 if len(faces) > 0:
                     if self.printTaken == 1:
                         self.sendPrintimg(frame)
@@ -120,7 +120,7 @@ class camPage(QMainWindow):
                 frame = cv2.flip(frame, 1)
                 cv2.imshow('frame', frame)
                 k = cv2.waitKey(1)
-                if k % 256 == 27 or self.disableCam == 1:
+                if self.disableCam == 1:
                     self.disableCam = 0
                     break
             else:
