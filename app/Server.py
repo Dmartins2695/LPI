@@ -174,14 +174,16 @@ class StudentModel(db.Model):
 class ImageModel(db.Model):
     __tablename__ = 'images'
 
-    def __init__(self, username, image, timeStamp):
+    def __init__(self, username, image, timeStamp, roomCode):
         self.username = username
         self.image = image
         self.timeStamp = timeStamp
+        self.roomCode = roomCode
 
     image = db.Column(db.String(120), primary_key=True, unique=True, nullable=False)
     username = db.Column(db.String(120), nullable=False)
     timeStamp = db.Column(db.String(120), nullable=False)
+    roomCode = db.Column(db.String(120), nullable=False)
 
     def save_to_db(self):
         db.session.add(self)
@@ -442,7 +444,7 @@ class receiveCode(Resource):
             room = RoomModel.find_by_code(code)
             if code == room.code:
                 student = StudentModel.find_by_username(studentName)
-                student.joinedRoom = room.roomName
+                student.joinedRoom = room.code
                 student.status = 1
                 student.save_to_db()
                 return {'code': 'sucess'}
@@ -461,10 +463,12 @@ class receiveImage(Resource):
         parser_upload.add_argument('image', help='Image cannot be blank', required=False)
         parser_upload.add_argument('studentName', help='code cannot be blank', required=False)
         parser_upload.add_argument('timestamp', help='code cannot be blank', required=False)
+        parser_upload.add_argument('roomCode', help='code cannot be blank', required=False)
         data = parser_upload.parse_args()
         image = data['image']
         studentName = data['studentName']
         timestamp = data['timestamp']
+        roomCode = data['roomCode']
         student = StudentModel.find_by_username(studentName)
         bytes = base64.b64decode(image)
         imagepath = path + "\\" + student.username + timestamp + '.jpg'
@@ -474,7 +478,8 @@ class receiveImage(Resource):
             with open(imagepath, "wb") as img:
                 img.write(bytes)
             imagepath = dbImagepath + '/' + student.username + timestamp + '.jpg'
-            imgToDb = ImageModel(username=student.username, image=imagepath, timeStamp=timestamp)
+            imgToDb = ImageModel(username=student.username, image=imagepath, timeStamp=timestamp, roomCode=roomCode)
+            print(imgToDb)
             student.newImages += 1
             student.save_to_db()
             imgToDb.save_to_db()
@@ -546,4 +551,4 @@ api.add_resource(studentRegister, '/studentRegister', endpoint="studentRegister"
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(debug=True, host="192.168.1.81", port="5000")
+    app.run(debug=True, host="192.168.1.134", port="5000")

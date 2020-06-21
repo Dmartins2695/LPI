@@ -7,7 +7,7 @@ import requests
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.uic import loadUi
 
-URL = "http://192.168.1.81:5000"
+URL = "http://192.168.1.134:5000"
 
 credentials = []
 
@@ -63,7 +63,7 @@ class CodePage(QMainWindow):
 
     def getCode(self):
         roomCode = self.code.text()
-        print(roomCode)
+        credentials.append(roomCode)
         json = {'roomCode': roomCode, 'studentName': credentials[0]}  # mandar username
         postRequest = requests.post(url=URL + '/receiveCode', data=json)
         postJason = postRequest.json()
@@ -92,7 +92,7 @@ class camPage(QMainWindow):
         result, frame = cv2.imencode('.jpg', frame, self.encode_param)
         jpg_as_text = base64.b64encode(frame)
         json = {'image': jpg_as_text, 'studentName': credentials[0],
-                'timestamp': datetime.now().strftime("%Hh%Mm%Ss")}
+                'timestamp': datetime.now().strftime("%Hh%Mm%Ss"), 'roomCode': credentials[1]}
         postRequest = requests.post(url=URL + '/receiveImage', data=json)
 
     # LPI18062020203648
