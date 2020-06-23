@@ -3,12 +3,12 @@
     <h1>{{ studentName }}</h1>
     {#    <img src="{{url_for('static', filename='/serverImages/14-06-2020_21-54-01.jpg') }}" alt="single">#}
     {% for image in allImages %}
-        <div>
-            <img src="{{ url_for('static', filename=image.image) }}" width="320" height="240"/>
-            <p>{{ image.timeStamp }}</p>
-
-        </div>
-
+        {% if image.roomCode == student.joinedRoom %}
+            <div>
+                <img src="{{ url_for('static', filename=image.image) }}" width="320" height="240"/>
+                <p>{{ image.timeStamp }}</p>
+            </div>
+        {% endif %}
     {% endfor %}
     {% if student.status == 0 %}
         {% if student.timeStamp is not none %}

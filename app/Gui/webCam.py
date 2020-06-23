@@ -14,11 +14,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(984, 744)
+        MainWindow.resize(1024, 860)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.imgLabel = QtWidgets.QLabel(self.centralwidget)
-        self.imgLabel.setGeometry(QtCore.QRect(-10, 30, 1001, 691))
+        self.imgLabel.setGeometry(QtCore.QRect(0, 0, 1024, 860))
         self.imgLabel.setFrameShape(QtWidgets.QFrame.Panel)
         self.imgLabel.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.imgLabel.setLineWidth(1)

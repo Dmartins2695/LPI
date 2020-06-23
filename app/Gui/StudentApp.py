@@ -4,10 +4,12 @@ from datetime import datetime
 
 import cv2
 import requests
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5 import QtCore
+from PyQt5.QtGui import QPixmap,QImage
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
 from PyQt5.uic import loadUi
 
-URL = "http://192.168.1.134:5000"
+URL = "http://192.168.1.81:5000"
 
 credentials = []
 
@@ -83,20 +85,20 @@ class camPage(QMainWindow):
         loadUi('webCam.ui', self)
         self.printTaken = -1
         self.disableCam = 0
-        self.encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
         self.btn_disable.clicked.connect(self.closeCvCam)
         self.btn_enable.clicked.connect(self.openCvCam)
-        self.btn_leave.clicked.connect(self.leave)
 
     def sendPrintimg(self, frame):
-        result, frame = cv2.imencode('.jpg', frame, self.encode_param)
+        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+        result, frame = cv2.imencode('.jpg', frame, encode_param)
         jpg_as_text = base64.b64encode(frame)
         json = {'image': jpg_as_text, 'studentName': credentials[0],
                 'timestamp': datetime.now().strftime("%Hh%Mm%Ss"), 'roomCode': credentials[1]}
         postRequest = requests.post(url=URL + '/receiveImage', data=json)
 
-    # LPI18062020203648
     def openCvCam(self):
+        currentFrame = 0
+        scale_percent = 145
         face_cascade = cv2.CascadeClassifier('cascades\data\haarcascade_frontalface_alt2.xml')
         cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
         json = {'studentName': credentials[0],
@@ -106,7 +108,7 @@ class camPage(QMainWindow):
             ret, frame = cap.read()
             if ret == True:
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                faces = face_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=3)
+                faces = face_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=9)
                 if len(faces) > 0:
                     if self.printTaken == 1:
                         self.sendPrintimg(frame)
@@ -117,20 +119,31 @@ class camPage(QMainWindow):
                     if self.printTaken == 0:
                         self.sendPrintimg(frame)
                     self.printTaken = 1
+                print(frame.shape)
                 frame = cv2.flip(frame, 1)
-                cv2.imshow('frame', frame)
+                width = int(frame.shape[1] * scale_percent / 100)
+                height = int(frame.shape[0] * scale_percent / 100)
+                dim = (width, height)
+                frame = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
+                frame = QImage(frame.data, frame.shape[1], frame.shape[0], QImage.Format_RGB888).rgbSwapped()
+                pixmap =QPixmap.fromImage(frame)
+                pixmap_resized = pixmap.scaled(1024, 860)
+                self.imgLabel.setPixmap(pixmap_resized)
                 k = cv2.waitKey(1)
                 if self.disableCam == 1:
                     self.disableCam = 0
                     break
             else:
                 break
+            currentFrame += 1
 
         # Release everything if job is finished
         cap.release()
         cv2.destroyAllWindows()
 
     def closeCvCam(self):
+        pixmap = QPixmap('blackscreen.jpg')
+        self.imgLabel.setPixmap(pixmap)
         self.disableCam = 1
         json = {'studentName': credentials[0],
                 'disable': 1, 'timestamp': datetime.now().strftime("%Hh%Mm%Ss")}

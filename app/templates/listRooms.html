@@ -2,6 +2,6 @@
     {% block body %}
         <h1>My Rooms</h1>
     {% for rooms in ownedRooms %}
-        <li><a href="{{ url_for('room',roomName = rooms.roomName) }}">{{ rooms.roomName }}</a></li>
+        <li><a href="{{ url_for('room',roomName = rooms.roomName, roomCode = rooms.code) }}">{{ rooms.roomName}}</a>- Room Code: {{ rooms.code }}</li>
     {% endfor %}
     {%  endblock %}

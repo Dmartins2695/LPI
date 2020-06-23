@@ -63,7 +63,7 @@ class RoomModel(db.Model):
         self.code = code
         self.owner = owner
 
-    roomName = db.Column(db.String(120), unique=True, nullable=False)
+    roomName = db.Column(db.String(120), nullable=False)
     code = db.Column(db.String(150), primary_key=True, unique=True, nullable=False)
     owner = db.Column(db.String(120), nullable=False)
 
@@ -72,25 +72,12 @@ class RoomModel(db.Model):
         db.session.commit()
 
     @classmethod
-    def find_by_roomName(cls, roomName):
-        return cls.query.filter_by(roomName=roomName).first()
-
-    @classmethod
     def find_by_code(cls, code):
         return cls.query.filter_by(code=code).first()
 
     @classmethod
     def find_owner_Rooms(cls, owner):
         return cls.query.filter_by(owner=owner)
-
-    @staticmethod
-    def generate_hash(password):
-        return sha256.hash(password)
-
-    # para verificar hash no login
-    @staticmethod
-    def verify_hash(password, hash):
-        return sha256.verify(password, hash)
 
     # elimina todos os utilizadores
     @classmethod
@@ -204,19 +191,6 @@ class ImageModel(db.Model):
     def find_by_username(cls, username):
         return cls.query.filter_by(username=username).first()
 
-    @staticmethod
-    def generate_hash(password):
-        return sha256.hash(password)
-
-    # para verificar hash no login
-    @staticmethod
-    def verify_hash(password, hash):
-        return sha256.verify(password, hash)
-
-    @classmethod
-    def find_images_by_id(cls, id):
-        return ImageModel.find_images_by_id(id)
-
     # elimina todos os utilizadores
     @classmethod
     def delete_all(cls):
@@ -315,8 +289,6 @@ def showStudentImages(roomName, studentName):
         student = StudentModel.find_by_username(studentName)
         if student:
             allImages = ImageModel.find_allImages(studentName)
-            for image in allImages:
-                print(image.image)
             return render_template('showStudentImages.html', roomName=roomName, studentName=studentName,
                                    allImages=allImages, student=student)
         else:
@@ -327,15 +299,15 @@ def showStudentImages(roomName, studentName):
 def listRooms():
     user = session['user']
     ownedRooms = RoomModel.find_owner_Rooms(user)
+    for rooms in ownedRooms:
+        print(rooms.code)
     return render_template('listRooms.html', ownedRooms=ownedRooms)
 
 
-@app.route('/room/<roomName>', methods=["GET", "POST"])
-def room(roomName):
-    roomToGetCode = RoomModel.find_by_roomName(roomName)
-    joinedRoom = roomName
-    allStudents = StudentModel.find_studentsRoom(joinedRoom)
-    return render_template('room.html', roomName=roomName, allStudents=allStudents, code=roomToGetCode.code)
+@app.route('/room/<roomName>/<roomCode>', methods=["GET", "POST"])
+def room(roomName, roomCode):
+    allStudents = StudentModel.find_studentsRoom(roomCode)
+    return render_template('room.html', roomName=roomName, roomCode=roomCode, allStudents=allStudents)
 
 
 @app.route('/createRoom', methods=["GET", "POST"])
@@ -348,7 +320,7 @@ def createRoom():
         try:
             room.save_to_db()
             flash('Sala criada com successo!', 'success')
-            return redirect(url_for('room', roomName=rname))
+            return redirect(url_for('room', roomName=rname,roomCode = code))
         except:
             flash('Sala já existe!', 'danger')
             return render_template("createRoom.html")
@@ -551,4 +523,4 @@ api.add_resource(studentRegister, '/studentRegister', endpoint="studentRegister"
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(debug=True, host="192.168.1.134", port="5000")
+    app.run(debug=True, host="192.168.1.81", port="5000")
