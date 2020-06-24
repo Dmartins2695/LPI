@@ -108,7 +108,7 @@ class camPage(QMainWindow):
             ret, frame = cap.read()
             if ret == True:
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                faces = face_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=9)
+                faces = face_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=7)
                 if len(faces) > 0:
                     if self.printTaken == 1:
                         self.sendPrintimg(frame)
@@ -121,13 +121,13 @@ class camPage(QMainWindow):
                     self.printTaken = 1
                 print(frame.shape)
                 frame = cv2.flip(frame, 1)
-                width = int(frame.shape[1] * scale_percent / 100)
-                height = int(frame.shape[0] * scale_percent / 100)
-                dim = (width, height)
-                frame = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
+                # width = int(frame.shape[1] * scale_percent / 100)
+                # height = int(frame.shape[0] * scale_percent / 100)
+                # dim = (width, height)
+                # frame = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
                 frame = QImage(frame.data, frame.shape[1], frame.shape[0], QImage.Format_RGB888).rgbSwapped()
                 pixmap =QPixmap.fromImage(frame)
-                pixmap_resized = pixmap.scaled(1024, 860)
+                pixmap_resized = pixmap.scaled(1000, 800)
                 self.imgLabel.setPixmap(pixmap_resized)
                 k = cv2.waitKey(1)
                 if self.disableCam == 1:
