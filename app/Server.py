@@ -288,6 +288,8 @@ def showStudentImages(roomName, roomCode, studentName):
     if request.method == "GET":
         student = StudentModel.find_by_username(studentName)
         if student:
+            student.newImages = 0
+            student.save_to_db()
             allImages = ImageModel.find_allImages(studentName)
             return render_template('showStudentImages.html', roomName=roomName, roomCode=roomCode,
                                    studentName=studentName,
