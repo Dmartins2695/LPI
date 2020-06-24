@@ -302,8 +302,6 @@ def showStudentImages(roomName, roomCode, studentName):
 def listRooms():
     user = session['user']
     ownedRooms = RoomModel.find_owner_Rooms(user)
-    for rooms in ownedRooms:
-        print(rooms.code)
     return render_template('listRooms.html', ownedRooms=ownedRooms)
 
 
@@ -382,7 +380,6 @@ class studentLogin(Resource):
         password = data['StudentPassword']
 
         client = StudentModel.find_by_username(user)
-        print(client.email)
         if StudentModel.verify_hash(password, client.password):
             session['Studentuser'] = user
             return {'code': 'sucess'}
@@ -454,7 +451,6 @@ class receiveImage(Resource):
                 img.write(bytes)
             imagepath = dbImagepath + '/' + student.username + timestamp + '.jpg'
             imgToDb = ImageModel(username=student.username, image=imagepath, timeStamp=timestamp, roomCode=roomCode)
-            print(imgToDb)
             student.newImages += 1
             student.save_to_db()
             imgToDb.save_to_db()
@@ -494,7 +490,6 @@ class receiveDisable(Resource):
         student = StudentModel.find_by_username(studentName)
         student.disable = disable
         student.disabletimeStampo = timestamp
-        print(student.disabletimeStampo)
         student.save_to_db()
 
 
@@ -512,7 +507,6 @@ class receiveEnable(Resource):
         student = StudentModel.find_by_username(studentName)
         student.enable = enable
         student.enabletimeStampo = timestamp
-        print(student.enabletimeStampo)
         student.save_to_db()
 
 
