@@ -283,16 +283,17 @@ def register():
     return render_template('register.html')
 
 
-@app.route('/showStudentImages/<roomName>/<studentName>', methods=["GET", "POST"])
-def showStudentImages(roomName, studentName):
+@app.route('/showStudentImages/<roomName>/<roomCode>/<studentName>', methods=["GET", "POST"])
+def showStudentImages(roomName, roomCode, studentName):
     if request.method == "GET":
         student = StudentModel.find_by_username(studentName)
         if student:
             allImages = ImageModel.find_allImages(studentName)
-            return render_template('showStudentImages.html', roomName=roomName, studentName=studentName,
+            return render_template('showStudentImages.html', roomName=roomName, roomCode=roomCode,
+                                   studentName=studentName,
                                    allImages=allImages, student=student)
         else:
-            return redirect(url_for('room', roomName=roomName))
+            return redirect(url_for('room', roomName=roomName, roomCode=roomCode))
 
 
 @app.route('/listRooms', methods=["GET", "POST"])
@@ -320,7 +321,7 @@ def createRoom():
         try:
             room.save_to_db()
             flash('Sala criada com successo!', 'success')
-            return redirect(url_for('room', roomName=rname,roomCode = code))
+            return redirect(url_for('room', roomName=rname, roomCode=code))
         except:
             flash('Sala já existe!', 'danger')
             return render_template("createRoom.html")
