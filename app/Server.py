@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from functools import wraps
 
+import document as document
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash
 from flask_jwt_extended import (
     JWTManager
@@ -307,8 +308,15 @@ def listRooms():
 
 @app.route('/room/<roomName>/<roomCode>', methods=["GET", "POST"])
 def room(roomName, roomCode):
-    allStudents = StudentModel.find_studentsRoom(roomCode)
-    return render_template('room.html', roomName=roomName, roomCode=roomCode, allStudents=allStudents)
+    if request.method == "GET":
+        allStudents = StudentModel.find_studentsRoom(roomCode)
+        return render_template('room.html', roomName=roomName, roomCode=roomCode, allStudents=allStudents)
+
+# def generate_Code(roomName,roomCode):
+#     roomCode = roomName + datetime.now().strftime("%d%m%Y%H%M%S")
+#     room = RoomModel.find_by_code(roomCode)
+#     room.code = roomCode
+#     room.save_to_db()
 
 
 @app.route('/createRoom', methods=["GET", "POST"])
